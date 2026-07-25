@@ -207,7 +207,8 @@ jobs:
 
 | Input | Default | Description |
 |:---|:---|:---|
-| `version` | `"latest"` | Zenzic Core version to execute (e.g., `"0.25.0"`) |
+| `version` | `0.25.0` | Zenzic Core version to execute. Pin to a specific release (e.g. `0.25.0`) for reproducible CI. |
+
 | `format` | `"text"` | Output format: `text`, `json`, or `sarif` |
 | `upload-sarif` | `"false"` | Automatically upload SARIF output to GitHub Code Scanning |
 | `guard-scan` | `"false"` | Triggers fatal pre-gate security scan (`zenzic guard scan`) |
