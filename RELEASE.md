@@ -32,12 +32,13 @@ git pull origin main
 just release <patch|minor|major>
 
 # 3. Create the release tag and push
-git tag v2.9.1
-git push && git push --tags
+git tag -s -S -m "Release v2.9.1" v2.9.1
+git push origin v2.9.1
 
 # 4. Move the floating v2 tag to the new release:
-git tag -fa v2 v2.9.1^{} -m "release: v2.9.1"
+git tag -s -S -fa v2 v2.9.1^{} -m "release: v2.9.1"
 git push origin v2 --force
+
 
 # Verification (Atomic Parity Check):
 git rev-parse v2^{} v2.9.1^{}

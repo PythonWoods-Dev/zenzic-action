@@ -67,9 +67,10 @@ def main() -> int:
     updates = [
         FileUpdate(
             path=repo_root / "action.yml",
-            pattern=re.compile(r'default: "[^\"]+"\s*# x-zenzic-core-pin.*'),
-            replacement=f'default: "{version}" # x-zenzic-core-pin',
+            pattern=re.compile(r'(default: ")[^"]+("\s*# x-zenzic-core-pin.*)'),
+            replacement=rf"\g<1>{version}\g<2>",
         ),
+
         FileUpdate(
             path=repo_root / "README.md",
             pattern=re.compile(r'(^\s{4}version: ")\d+\.\d+\.\d+("$)', re.MULTILINE),
