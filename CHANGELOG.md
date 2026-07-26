@@ -9,6 +9,13 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 ## [Unreleased]
 
+## [2.10.1] - 2026-07-26
+
+### Changed
+
+- **Dependencies**: Pinned Zenzic Core dependency to version `0.25.3`, inheriting fixes for Zensical framework static asset mapping and PolyglotExtractor AST reference link definition extraction (`CORE-FIX-001`).
+
+
 ## [2.10.0] - 2026-07-25
 
 ## [2.9.1] - 2026-07-22

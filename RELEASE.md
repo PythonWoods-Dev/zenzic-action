@@ -6,17 +6,17 @@
 
 | Field   | Value      |
 | :------ | :--------- |
-| Version | v2.10.0 |
-| Date    | 2026-07-25 |
+| Version | v2.10.1 |
+| Date    | 2026-07-26 |
 | Status  | Stable     |
 
 ## Release Checklist
 
 Before tagging, every item must be green:
 
-- [ ] `action.yml` — `default:` pin updated to the latest Zenzic core version (`0.25.0`)
-- [ ] `package.json` version bumped to `2.10.0`
-- [ ] `pyproject.toml` — synchronized with core pin (`zenzic==0.25.0`)
+- [ ] `action.yml` — `default:` pin updated to the latest Zenzic core version (`0.25.3`)
+- [ ] `package.json` version bumped to `2.10.1`
+- [ ] `pyproject.toml` — synchronized with core pin (`zenzic==0.25.3`)
 - [ ] `just versions` — returns `✅ Ecosystem alignment verified.`
 - [ ] `just verify` — exits 0
 - [ ] `zenzic check .` — zero findings (DQS 100/100)
@@ -24,24 +24,31 @@ Before tagging, every item must be green:
 ## Bump & Publish
 
 ```bash
-# 1. Merge the PR and switch to main
+# 1. Create release branch
+git checkout -b release/vX.Y.Z
+
+# 2. Realign core pin (if updating Zenzic Core dependency)
+just pin-core <version>
+
+# 3. Bump version and update changelog
+just release <patch|minor|major>
+
+# 4. Open and merge PR into main
+
+# 5. Switch to main and pull latest
 git checkout main
 git pull origin main
 
-# 2. Bump version and update changelog
-just release <patch|minor|major>
+# 6. Create the release tag and push
+git tag -s -m "Release v2.10.1" v2.10.1
+git push origin v2.10.1
 
-# 3. Create the release tag and push
-git tag -s -S -m "Release v2.10.0" v2.10.0
-git push origin v2.10.0
-
-# 4. Move the floating v2 tag to the new release:
-git tag -s -S -fa v2 v2.10.0^{} -m "release: v2.10.0"
+# 7. Move the floating v2 tag to the new release:
+git tag -s -fa v2 v2.10.1^{} -m "release: v2.10.1"
 git push origin v2 --force
 
-
 # Verification (Atomic Parity Check):
-git rev-parse v2^{} v2.10.0^{}
+git rev-parse v2^{} v2.10.1^{}
 # SUCCESS: Both hashes must be identical.
 ```
 

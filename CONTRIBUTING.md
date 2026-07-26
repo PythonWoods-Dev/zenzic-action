@@ -111,7 +111,7 @@ uvx pre-commit autoupdate --freeze
 just verify
 
 # 2. Update the Zenzic core pin to the target version (e.g., 0.25.0)
-just pin-core 0.25.0
+just pin-core 0.25.3
 
 # 3. Check alignment between core and action dependencies
 just versions
