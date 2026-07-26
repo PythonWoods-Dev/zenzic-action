@@ -6,8 +6,8 @@
 
 | Field   | Value      |
 | :------ | :--------- |
-| Version | v2.10.0 |
-| Date    | 2026-07-25 |
+| Version | v2.10.1 |
+| Date    | 2026-07-26 |
 | Status  | Stable     |
 
 ## Release Checklist
@@ -15,7 +15,7 @@
 Before tagging, every item must be green:
 
 - [ ] `action.yml` — `default:` pin updated to the latest Zenzic core version (`0.25.3`)
-- [ ] `package.json` version bumped to `2.10.0`
+- [ ] `package.json` version bumped to `2.10.1`
 - [ ] `pyproject.toml` — synchronized with core pin (`zenzic==0.25.3`)
 - [ ] `just versions` — returns `✅ Ecosystem alignment verified.`
 - [ ] `just verify` — exits 0
@@ -32,16 +32,16 @@ git pull origin main
 just release <patch|minor|major>
 
 # 3. Create the release tag and push
-git tag -s -S -m "Release v2.10.0" v2.10.0
-git push origin v2.10.0
+git tag -s -S -m "Release v2.10.1" v2.10.1
+git push origin v2.10.1
 
 # 4. Move the floating v2 tag to the new release:
-git tag -s -S -fa v2 v2.10.0^{} -m "release: v2.10.0"
+git tag -s -S -fa v2 v2.10.1^{} -m "release: v2.10.1"
 git push origin v2 --force
 
 
 # Verification (Atomic Parity Check):
-git rev-parse v2^{} v2.10.0^{}
+git rev-parse v2^{} v2.10.1^{}
 # SUCCESS: Both hashes must be identical.
 ```
 
