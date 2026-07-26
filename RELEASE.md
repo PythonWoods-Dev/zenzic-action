@@ -24,21 +24,28 @@ Before tagging, every item must be green:
 ## Bump & Publish
 
 ```bash
-# 1. Merge the PR and switch to main
+# 1. Create release branch
+git checkout -b release/vX.Y.Z
+
+# 2. Realign core pin (if updating Zenzic Core dependency)
+just pin-core <version>
+
+# 3. Bump version and update changelog
+just release <patch|minor|major>
+
+# 4. Open and merge PR into main
+
+# 5. Switch to main and pull latest
 git checkout main
 git pull origin main
 
-# 2. Bump version and update changelog
-just release <patch|minor|major>
-
-# 3. Create the release tag and push
-git tag -s -S -m "Release v2.10.1" v2.10.1
+# 6. Create the release tag and push
+git tag -s -m "Release v2.10.1" v2.10.1
 git push origin v2.10.1
 
-# 4. Move the floating v2 tag to the new release:
-git tag -s -S -fa v2 v2.10.1^{} -m "release: v2.10.1"
+# 7. Move the floating v2 tag to the new release:
+git tag -s -fa v2 v2.10.1^{} -m "release: v2.10.1"
 git push origin v2 --force
-
 
 # Verification (Atomic Parity Check):
 git rev-parse v2^{} v2.10.1^{}
