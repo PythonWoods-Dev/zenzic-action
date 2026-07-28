@@ -6,7 +6,7 @@
 
 | Field   | Value      |
 | :------ | :--------- |
-| Version | v2.10.2 |
+| Version | v2.10.3 |
 | Date    | 2026-07-28 |
 | Status  | Stable     |
 
@@ -14,9 +14,9 @@
 
 Before tagging, every item must be green:
 
-- [ ] `action.yml` — `default:` pin updated to the latest Zenzic core version (`0.26.2`)
-- [ ] `package.json` version bumped to `2.10.2`
-- [ ] `pyproject.toml` — synchronized with core pin (`zenzic==0.26.2`)
+- [ ] `action.yml` — `default:` pin updated to the latest Zenzic core version (`0.26.3`)
+- [ ] `package.json` version bumped to `2.10.3`
+- [ ] `pyproject.toml` — synchronized with core pin (`zenzic==0.26.3`)
 - [ ] `just versions` — returns `✅ Ecosystem alignment verified.`
 - [ ] `just verify` — exits 0
 - [ ] `zenzic check .` — zero findings (DQS 100/100)
@@ -27,28 +27,31 @@ Before tagging, every item must be green:
 # 1. Create release branch
 git checkout -b release/vX.Y.Z
 
-# 2. Realign core pin (if updating Zenzic Core dependency)
-just pin-core <version>
+# 2. Preview orchestrated release (version bump + core pin)
+just release-dry <patch|minor|major> <core-version>
 
-# 3. Bump version and update changelog
-just release <patch|minor|major>
+# 3. Execute orchestrated release in one signed commit
+just release <patch|minor|major> <core-version>
 
-# 4. Open and merge PR into main
+# 4. Validate release metadata/core-pin parity
+just audit-release
 
-# 5. Switch to main and pull latest
+# 5. Open and merge PR into main
+
+# 6. Switch to main and pull latest
 git checkout main
 git pull origin main
 
-# 6. Create the release tag and push
-git tag -s -m "Release v2.10.2" v2.10.2
-git push origin v2.10.2
+# 7. Create the release tag and push
+git tag -s -m "Release v2.10.3" v2.10.3
+git push origin v2.10.3
 
-# 7. Move the floating v2 tag to the new release:
-git tag -s -fa v2 v2.10.2^{} -m "release: v2.10.2"
+# 8. Move the floating v2 tag to the new release:
+git tag -s -fa v2 v2.10.3^{} -m "release: v2.10.3"
 git push origin v2 --force
 
 # Verification (Atomic Parity Check):
-git rev-parse v2^{} v2.10.2^{}
+git rev-parse v2^{} v2.10.3^{}
 # SUCCESS: Both hashes must be identical.
 ```
 
