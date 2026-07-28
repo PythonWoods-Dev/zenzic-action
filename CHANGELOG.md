@@ -9,6 +9,8 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 ## [Unreleased]
 
+## [2.10.2] - 2026-07-28
+
 ### Fixed
 - **Core Baseline Alignment**: Realigned pinned Zenzic Core dependency to `0.26.1`, integrating critical URP unification and static asset resolution fixes.
 
