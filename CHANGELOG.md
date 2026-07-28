@@ -9,6 +9,9 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 ## [Unreleased]
 
+### Fixed
+- **Core Baseline Alignment**: Realigned pinned Zenzic Core dependency to `0.26.3`.
+
 ## [2.10.2] - 2026-07-28
 
 ### Fixed
