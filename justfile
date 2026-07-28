@@ -298,7 +298,7 @@ _release-contracts:
     grep -qE '^version:' justfile
     grep -qE '^core-version:' justfile
     grep -qE '^pin-core version:' justfile
-    grep -qE '^release part:' justfile
+    grep -qE '^release part core_version:' justfile
     grep -qE '^release-dry part' justfile
     grep -qE '^audit-release:' justfile
     grep -qE '^check-core-pin-local:' justfile
