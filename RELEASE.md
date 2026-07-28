@@ -27,23 +27,26 @@ Before tagging, every item must be green:
 # 1. Create release branch
 git checkout -b release/vX.Y.Z
 
-# 2. Realign core pin (if updating Zenzic Core dependency)
-just pin-core <version>
+# 2. Preview orchestrated release (version bump + core pin)
+just release-dry <patch|minor|major> <core-version>
 
-# 3. Bump version and update changelog
-just release <patch|minor|major>
+# 3. Execute orchestrated release in one signed commit
+just release <patch|minor|major> <core-version>
 
-# 4. Open and merge PR into main
+# 4. Validate release metadata/core-pin parity
+just audit-release
 
-# 5. Switch to main and pull latest
+# 5. Open and merge PR into main
+
+# 6. Switch to main and pull latest
 git checkout main
 git pull origin main
 
-# 6. Create the release tag and push
+# 7. Create the release tag and push
 git tag -s -m "Release v2.10.2" v2.10.2
 git push origin v2.10.2
 
-# 7. Move the floating v2 tag to the new release:
+# 8. Move the floating v2 tag to the new release:
 git tag -s -fa v2 v2.10.2^{} -m "release: v2.10.2"
 git push origin v2 --force
 

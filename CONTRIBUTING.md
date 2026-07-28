@@ -110,18 +110,15 @@ uvx pre-commit autoupdate --freeze
 # 1. Ensure branch is clean and checks are green
 just verify
 
-# 2. Update the Zenzic core pin to the target version (e.g., 0.25.0)
-just pin-core 0.26.2
+# 2. Preview orchestrated release (version bump + core pin)
+just release-dry patch 0.26.3
 
-# 3. Check alignment between core and action dependencies
-just versions
+# 3. Apply orchestrated release in one signed commit
+just release patch 0.26.3
 
-# 4. Preview version changes (dry-run)
-just release-dry patch
+# 4. Validate release metadata/core-pin parity
+just audit-release
 
-# 5. Apply the version bump, commit, and create tag
-just release patch
-
-# 6. Push commit and tag
+# 5. Push commit and tag
 git push && git push --tags
 ```

@@ -5,22 +5,28 @@ set shell := ["bash", "-c"]
 
 # just — developer workflow for zenzic-action.
 # Use `just --list` to see available commands.
+# Key release flow:
+#   just release <patch|minor|major> <core-version>
+#   just release-dry <patch|minor|major> <core-version>
+#   just audit-release
 
 # Release orchestration: explicit, transparent, and lockfile-first.
-release part: _release-contracts
+release part core_version: _release-contracts
     #!/usr/bin/env bash
     set -euo pipefail
     case "{{ part }}" in
         patch|minor|major) ;;
         *) echo "Invalid part '{{ part }}'. Use patch|minor|major"; exit 2 ;;
     esac
-    uvx --from "bump-my-version==1.2.6" bump-my-version bump {{ part }}
+    just _validate-semver "{{core_version}}"
+    uvx --from "bump-my-version==1.2.6" bump-my-version bump {{ part }} --no-commit
+    just _pin-core-apply "{{core_version}}"
     if [ -f package-lock.json ]; then
         npm ci
     fi
     version="$(uvx --from "bump-my-version==1.2.6" bump-my-version show current_version)"
     git add -u
-    git commit -S -s -m "release: bump version to ${version}"
+    git commit -S -s -m "release: bump version to ${version} (core {{core_version}})"
 
 # Show the current action version
 version:
@@ -47,20 +53,43 @@ versions:
     fi
     echo "✅ Ecosystem alignment verified."
 
-# Realign the Zenzic Core pin in action.yml using the anchored marker
-# Usage: just pin-core <version>
-pin-core version:
+audit-release:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    ACT_BUMP="$(uvx --from 'bump-my-version==1.2.6' bump-my-version show current_version)"
+    ACT_PKG="$(grep -oP '"version":\s*"\K[0-9.]+' package.json | head -n1)"
+    ACT_REL="$(grep -oP '\| Version \| v\K[0-9.]+' RELEASE.md)"
+    CORE_YML="$(just core-version)"
+    CORE_PY="$(grep -oP 'zenzic==\K[0-9.]+' pyproject.toml)"
+    CORE_README="$(grep -oP '\| `version` \| `\K[0-9.]+' README.md)"
+    if [[ -z "$ACT_BUMP" || -z "$ACT_PKG" || -z "$ACT_REL" || -z "$CORE_YML" || -z "$CORE_PY" || -z "$CORE_README" ]]; then
+        echo "audit-release failed: missing expected release/core markers"
+        exit 1
+    fi
+    if [[ "$ACT_BUMP" != "$ACT_PKG" || "$ACT_BUMP" != "$ACT_REL" ]]; then
+        echo "audit-release failed: action version mismatch (bump/package/release)"
+        echo "  bump=$ACT_BUMP package.json=$ACT_PKG RELEASE.md=$ACT_REL"
+        exit 1
+    fi
+    if [[ "$CORE_YML" != "$CORE_PY" || "$CORE_YML" != "$CORE_README" ]]; then
+        echo "audit-release failed: core pin mismatch (action.yml/pyproject/README)"
+        echo "  action.yml=$CORE_YML pyproject=$CORE_PY README.md=$CORE_README"
+        exit 1
+    fi
+    grep -q "core version (\`$CORE_YML\`)" RELEASE.md
+    echo "✅ audit-release: release metadata and core pin alignment are coherent."
+
+_validate-semver version:
     #!/usr/bin/env bash
     set -euo pipefail
     if [[ ! "{{version}}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
         echo "Invalid version '{{version}}'. Use MAJOR.MINOR.PATCH"
         exit 2
     fi
-    if [ -n "$(git status --porcelain)" ]; then
-        echo "Working tree is not clean. Commit or stash changes before pin-core."
-        exit 3
-    fi
-    echo "Aligning Zenzic Core pin to {{version}}..."
+
+_pin-core-apply version:
+    #!/usr/bin/env bash
+    set -euo pipefail
     uv run python scripts/pin_core.py {{version}}
     sed -i 's/"zenzic\(>=\|==\).*"/"zenzic=={{version}}"/g' pyproject.toml
     sed -i 's/core version (`.*`)/core version (`{{version}}`)/g' RELEASE.md
@@ -68,6 +97,19 @@ pin-core version:
     sed -i 's/version (`.*`)/version (`{{version}}`)/' RELEASE.md
     sed -i 's/just pin-core [0-9.]\+/just pin-core {{version}}/g' CONTRIBUTING.md
     sed -i 's/default: ".*" # x-zenzic-core-pin.*/default: "{{version}}" # x-zenzic-core-pin/' action.yml
+
+# Realign the Zenzic Core pin in action.yml using the anchored marker
+# Usage: just pin-core <version>
+pin-core version:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    just _validate-semver "{{version}}"
+    if [ -n "$(git status --porcelain)" ]; then
+        echo "Working tree is not clean. Commit or stash changes before pin-core."
+        exit 3
+    fi
+    echo "Aligning Zenzic Core pin to {{version}}..."
+    just _pin-core-apply "{{version}}"
     git add action.yml README.md .bumpversion.toml pyproject.toml RELEASE.md CONTRIBUTING.md
     git commit -S -s -m "chore(deps): pin zenzic core to {{version}}"
 
@@ -76,13 +118,15 @@ pin-core version:
 pin-core-dry version:
     #!/usr/bin/env bash
     set -euo pipefail
+    just _validate-semver "{{version}}"
     uv run python scripts/pin_core.py {{version}} --dry-run
 
-# Simulate a release bump without modifying any files
-# Usage: just release-dry patch|minor|major [--short]
-release-dry part *args:
+# Simulate a release bump and core-pin orchestration without modifying files
+# Usage: just release-dry patch|minor|major <core-version> [--short]
+release-dry part core_version *args:
     #!/usr/bin/env bash
     set -euo pipefail
+    just _validate-semver "{{core_version}}"
     _short=false
     for _arg in {{args}}; do [[ "$_arg" == "--short" ]] && _short=true; done
     if $_short; then
@@ -91,6 +135,8 @@ release-dry part *args:
     else
         uvx --from "bump-my-version==1.2.6" bump-my-version bump {{part}} --dry-run --allow-dirty --verbose
     fi
+    echo ""
+    just pin-core-dry "{{core_version}}"
 
 # Check REUSE/SPDX licence compliance
 reuse:
@@ -254,6 +300,7 @@ _release-contracts:
     grep -qE '^pin-core version:' justfile
     grep -qE '^release part:' justfile
     grep -qE '^release-dry part' justfile
+    grep -qE '^audit-release:' justfile
     grep -qE '^check-core-pin-local:' justfile
     grep -q -- '--dry-run --allow-dirty --verbose' justfile
     grep -q 'ZENZIC_CORE_PATH' justfile
