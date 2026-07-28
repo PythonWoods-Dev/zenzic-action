@@ -118,7 +118,7 @@ brand_obsolescence = [
 # IMPACT:   In --audit mode, shown with [POLICY_EXEMPTION] label.
 #
 [governance.directory_policies]
-"README.md" = ["Z104"]
+"README.md" = ["Z101"]
 "assets/**" = ["Z405"]
 
 # Governance Playbook:
