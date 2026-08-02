@@ -9,6 +9,8 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 ## [Unreleased]
 
+## [2.11.0] - 2026-08-02
+
 - **Core Baseline Alignment**: Realigned default pinned Zenzic Core dependency to `0.27.0`.
 - **Baseline & Regression Tracking**: Added documentation and example workflows for `--baseline .zenzic-baseline.json` and `--update-baseline`.
 - **New Rule Diagnostic Support**: Automatic SARIF upload and PR annotations for new `Z4xx` (Smart Link Graph), `Z5xx` (Semantic Linting), and `Z1xx` (Configuration Engine) rules.
