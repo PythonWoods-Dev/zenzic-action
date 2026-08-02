@@ -5,6 +5,8 @@ SPDX-License-Identifier: Apache-2.0
 
 # Security Policy — zenzic-action
 
+This document defines the security disclosure process for `zenzic-action`. For the Zenzic Core security policy, see [github.com/PythonWoods/zenzic](https://github.com/PythonWoods/zenzic/blob/main/SECURITY.md).
+
 ## Scope
 
 This policy covers **zenzic-action** — the official GitHub Action that runs
@@ -75,8 +77,8 @@ by the wrapper script — it is consumed exclusively by `github/codeql-action/up
 
 | Version | Support status |
 |---------|----------------|
-| `2.10.4` (current) | ✅ All security fixes |
-| `< 2.10.4` | ❌ End of life — no support |
+| `2.11.0` (current) | ✅ All security fixes |
+| `< 2.11.0` | ❌ End of life — no support |
 
 ---
 
@@ -85,3 +87,7 @@ by the wrapper script — it is consumed exclusively by `github/codeql-action/up
 We follow a **coordinated disclosure** model. We ask that you allow up to 14 days for a
 patch to be released before any public disclosure. Confirmed reporters will be credited in
 the release changelog unless they prefer to remain anonymous.
+
+---
+
+See also: [README](README.md)

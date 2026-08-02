@@ -10,7 +10,7 @@ license = {text = "Apache-2.0"}
 authors = [{name = "PythonWoods", email = "dev@pythonwoods.dev"}]
 dynamic = ["version"]
 dependencies = [
-    "zenzic==0.26.5",
+    "zenzic==0.27.0",
 ]
 
 [project.urls]
