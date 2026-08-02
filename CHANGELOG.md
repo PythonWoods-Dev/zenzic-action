@@ -37,6 +37,8 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 ## [2.10.0] - 2026-07-25
 
+- *No notable changes. Internal version bump.*
+
 ## [2.9.1] - 2026-07-22
 
 ### Changed
@@ -54,7 +56,11 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 ## [2.8.2] - 2026-07-14
 
+- *No notable changes. Internal version bump.*
+
 ## [2.8.1] - 2026-07-14
+
+- *No notable changes. Internal version bump.*
 
 ## [2.8.0] - 2026-07-12
 
@@ -63,7 +69,11 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 ## [2.7.1] - 2026-07-11
 
+- *No notable changes. Internal version bump.*
+
 ## [2.7.0] - 2026-07-11
+
+- *No notable changes. Internal version bump.*
 
 ## [2.6.2] - 2026-07-05
 
@@ -101,6 +111,8 @@ All notable changes to zenzic-action are documented in this file. The project ad
 - **Dependencies**: Pinned Zenzic core to `0.19.3` to restore the deterministic execution environment.
 
 ## [2.5.0] - 2026-07-01
+
+- *No notable changes. Internal version bump.*
 
 ## [2.4.0] - 2026-06-28
 
