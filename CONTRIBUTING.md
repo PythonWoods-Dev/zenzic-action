@@ -95,6 +95,8 @@ Both must pass with zero errors before opening or updating a PR.
 
 ## Maintainer Only: Workflow Hardening & Release Procedure
 
+The following procedures are reserved for repository maintainers with release permissions. They must be executed in the documented sequence to preserve ecosystem integrity.
+
 ### Immutable Pre-Commit Hooks (ADR-089)
 
 All `rev:` keys in `.pre-commit-config.yaml` must point to an **immutable commit hash pin**, never to a semantic tag (`v1.2.3`).
@@ -123,3 +125,7 @@ just audit-release
 # 5. Push commit and tag
 git push && git push --tags
 ```
+
+---
+
+See also: [README](README.md)

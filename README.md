@@ -85,6 +85,8 @@ Zenzic Action surfaces findings directly where you work — no digging through C
 
 ## Integration Blueprints
 
+The following ready-to-use GitHub Actions workflow templates cover the four primary integration patterns for `zenzic-action`.
+
 ### 1. Baseline Check (SAST & Topology Verification)
 
 This blueprint provides static application security testing (SAST), link validation, and graph topology verification. It executes during pushes and PRs, ensuring no broken links, credential leaks, or invalid configurations enter the repository.
