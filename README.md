@@ -71,7 +71,6 @@ Place a `.zenzic.toml` at the root of your repository and the action picks it up
 
 For advanced configuration (Configuration Discovery, Sovereign Override, Quality Gate scoring, nightly audit), see the [Zenzic Action docs](https://zenzic.dev/docs/reference/zenzic-action).
 
-
 ---
 
 ## 🔍 Visual Feedback
@@ -87,6 +86,7 @@ Zenzic Action surfaces findings directly where you work — no digging through C
 ## Integration Blueprints
 
 ### 1. Baseline Check (SAST & Topology Verification)
+
 This blueprint provides static application security testing (SAST), link validation, and graph topology verification. It executes during pushes and PRs, ensuring no broken links, credential leaks, or invalid configurations enter the repository.
 
 ```yaml
@@ -114,6 +114,7 @@ jobs:
 ```
 
 ### 2. Security Hardening (SARIF + Upload Integration)
+
 This blueprint runs a security-hardened gate. It executes the secret scanner (`guard-scan`) to catch exposed credentials and path traversals, then uploads the SARIF report directly to the GitHub Code Scanning Security tab.
 
 ```yaml
@@ -145,6 +146,7 @@ jobs:
 ```
 
 ### 3. PR Governance (Inline Annotations & DQS Tracking)
+
 This blueprint implements pull-request governance. It downloads the DQS baseline from the default branch, runs the quality gate comparison, maps issues to inline annotations, and publishes a summary of the Document Quality Score (DQS) to the workflow run.
 
 ```yaml
@@ -173,6 +175,7 @@ jobs:
 ```
 
 ### 4. Sovereign Nightly Audit (Full Unfiltered Audit)
+
 Runs an unsuppressed audit on schedule, reporting hidden technical debt directly to Code Scanning.
 
 ```yaml

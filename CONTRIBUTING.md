@@ -16,7 +16,7 @@ Thank you for contributing to the official GitHub Action for Zenzic!
 Zenzic is structured across three independent, dedicated repositories:
 
 | Repository | Purpose | Primary Stack |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | **[zenzic](https://github.com/PythonWoods/zenzic)** | Python Core analysis engine & CLI (`src/zenzic`) | Python 3.10+, `uv`, `pytest`, `mypy` |
 | **[zenzic-vscode](https://github.com/PythonWoods/zenzic-vscode)** | Official VS Code Extension (LSP Thin Client) | TypeScript, Node.js 24+, VS Code API |
 | **[zenzic-action](https://github.com/PythonWoods/zenzic-action)** (this repo) | Official GitHub Action CI/CD Wrapper | YAML, Bash, SARIF Upload |
@@ -100,6 +100,7 @@ Both must pass with zero errors before opening or updating a PR.
 All `rev:` keys in `.pre-commit-config.yaml` must point to an **immutable commit hash pin**, never to a semantic tag (`v1.2.3`).
 
 Updating pinned hooks:
+
 ```bash
 uvx pre-commit autoupdate --freeze
 ```
