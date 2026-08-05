@@ -9,6 +9,8 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 ## [Unreleased]
 
+Upcoming changes for the next release.
+
 ### Changed
 - **Core Baseline Alignment**: Bumped the default Zenzic Core version in `action.yml` to `0.27.2`.
 - Inherits all performance improvements from Zenzic Core v0.27.2, including optimized event coalescing and debounce buffering for large-scale documentation repositories.
