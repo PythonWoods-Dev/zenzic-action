@@ -13,6 +13,8 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 ## [2.11.1] - 2026-08-05
 
+Patch release — dependency and documentation alignment.
+
 ### Changed
 - **Default Version Pin**: Bumped the default Zenzic Core version in `action.yml` to `0.27.1`.
 - **Documentation**: Updated `README.md` to include workflow examples for Baseline & Regression Tracking (`--baseline .zenzic-baseline.json`).
