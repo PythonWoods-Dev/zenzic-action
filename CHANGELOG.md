@@ -9,6 +9,8 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 ## [Unreleased]
 
+Upcoming changes for the next release.
+
 ## [2.11.2] - 2026-08-05
 
 Upcoming changes for the next release.
