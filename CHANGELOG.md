@@ -9,7 +9,8 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 ## [Unreleased]
 
-*No notable changes pending.*
+### Changed
+- **Default Version Pin**: Bumped the default Zenzic Core version in `action.yml` to `0.27.2`.
 
 ## [2.11.1] - 2026-08-05
 
