@@ -59,7 +59,7 @@ The minimal configuration — zero Python setup, SARIF to Code Scanning in one s
 - name: Run Zenzic Documentation Quality Gate
   uses: PythonWoods/zenzic-action@v2
   with:
-    version: "0.27.0"
+    version: "0.27.1"
     format: sarif
     upload-sarif: "true"
   permissions:
@@ -212,7 +212,7 @@ jobs:
 
 | Input | Default | Description |
 |:---|:---|:---|
-| `version` | `0.27.0` | Zenzic Core version to execute. Pin to a specific release (e.g. `0.25.0`) for reproducible CI. |
+| `version` | `0.27.1` | Zenzic Core version to execute. Pin to a specific release (e.g. `0.25.0`) for reproducible CI. |
 
 | `format` | `"text"` | Output format: `text`, `json`, or `sarif` |
 | `upload-sarif` | `"false"` | Automatically upload SARIF output to GitHub Code Scanning |
