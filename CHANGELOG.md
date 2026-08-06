@@ -9,29 +9,8 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 ## [Unreleased]
 
-Upcoming changes for the next release.
+*Upcoming changes for the next release.*
 
-## [2.11.2] - 2026-08-05
-
-Upcoming changes for the next release.
-
-### Changed
-- **Core Baseline Alignment**: Bumped the default Zenzic Core version in `action.yml` to `0.27.2`.
-- Inherits all performance improvements from Zenzic Core v0.27.2, including optimized event coalescing and debounce buffering for large-scale documentation repositories.
-
-## [2.11.1] - 2026-08-05
-
-Patch release — dependency and documentation alignment.
-
-### Changed
-- **Default Version Pin**: Bumped the default Zenzic Core version in `action.yml` to `0.27.1`.
-- **Documentation**: Updated `README.md` to include workflow examples for Baseline & Regression Tracking (`--baseline .zenzic-baseline.json`).
-
-## [2.11.0] - 2026-08-02
-
-- **Core Baseline Alignment**: Realigned default pinned Zenzic Core dependency to `0.27.0`.
-- **Baseline & Regression Tracking**: Added documentation and example workflows for `--baseline .zenzic-baseline.json` and `--update-baseline`.
-- **New Rule Diagnostic Support**: Automatic SARIF upload and PR annotations for new `Z4xx` (Smart Link Graph), `Z5xx` (Semantic Linting), and `Z1xx` (Configuration Engine) rules.
 
 ## [2.10.4] - 2026-07-29
 
@@ -255,5 +234,6 @@ Breaking minor release — dropped Docusaurus support, action bumped to v2.
 
 ## Historical Releases
 
+- v2.11.x archive: [changelogs/v2.11.x.md](./changelogs/v2.11.x.md)
 - v1.x archive: [changelogs/v1.x.md](./changelogs/v1.x.md)
 - Archive index: [changelogs/README.md](./changelogs/README.md)
