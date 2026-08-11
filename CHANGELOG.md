@@ -9,7 +9,10 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 ## [Unreleased]
 
-*Upcoming changes for the next release.*
+### Changed
+
+- **Brand & Positioning Alignment (`V0.27-13`)**: Realigned Action description (`action.yml`) and README to position Zenzic as a **Deterministic Document Integrity Engine**, eradicating misleading "SAST" terminology (**Mirror Law ADR-020**).
+- **Dependencies Bump**: Updated `github/codeql-action` to `v4` (`v4.37.6`) in CodeQL workflow.
 
 ---
 
