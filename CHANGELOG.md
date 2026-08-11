@@ -13,6 +13,8 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 ## [2.12.0] - 2026-08-11
 
+Release v2.12.0 introduces compliance audit report artifact generation, enriched Enterprise SARIF v2.1.0 metadata, and Policy-as-Code Engine integration aligned with Zenzic Core v0.28.0.
+
 ### Added
 
 - **Audit Mode Artifact Generation (`V0.28-04`)**: Added new optional input `generate_audit_report` (default: `false`). When set to `true`, the action executes `zenzic audit --format json > zenzic-audit.json` and uploads `zenzic-audit.json` as a workflow artifact (`actions/upload-artifact`).
@@ -43,4 +45,4 @@ All notable changes to zenzic-action are documented in this file. The project ad
 - v2.3.x archive: [changelogs/v2.3.x.md](./changelogs/v2.3.x.md)
 - v2.2.x archive: [changelogs/v2.2.x.md](./changelogs/v2.2.x.md)
 - v2.1.x archive: [changelogs/v2.1.x.md](./changelogs/v2.1.x.md)
-- v2.0.x archive: [changelogs/v2.0.x.md](./changelogs/v2.0.x.md)
+- v1.x archive: [changelogs/v1.x.md](./changelogs/v1.x.md)
