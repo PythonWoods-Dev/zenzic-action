@@ -43,5 +43,4 @@ All notable changes to zenzic-action are documented in this file. The project ad
 - v2.3.x archive: [changelogs/v2.3.x.md](./changelogs/v2.3.x.md)
 - v2.2.x archive: [changelogs/v2.2.x.md](./changelogs/v2.2.x.md)
 - v2.1.x archive: [changelogs/v2.1.x.md](./changelogs/v2.1.x.md)
-- v1.x archive: [changelogs/v1.x.md](./changelogs/v1.x.md)
-- Archive index: [changelogs/README.md](./changelogs/README.md)
+- v2.0.x archive: [changelogs/v2.0.x.md](./changelogs/v2.0.x.md)
