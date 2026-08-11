@@ -11,7 +11,7 @@
   </a>
 </p>
 
-<p align="center">Deterministic Document Integrity Engine and SAST for Markdown/MDX graphs.</p>
+<p align="center">Deterministic Document Integrity Engine for Markdown/MDX graphs.</p>
 
 <p align="center">
   <a href="https://github.com/PythonWoods/zenzic-action/actions/workflows/self-check.yml"><img alt="ci-status" src="https://img.shields.io/github/actions/workflow/status/PythonWoods/zenzic-action/self-check.yml?branch=main&label=ci&style=flat-square"></a>
@@ -28,7 +28,7 @@
 
 ---
 
-Run Zenzic SAST and graph integrity analysis in CI — surfacing results directly in GitHub Code Scanning without reading logs.
+Run Zenzic static analysis and graph integrity checks in CI — surfacing results directly in GitHub Code Scanning without reading logs.
 
 **Exit code contract (ADR-075).** The wrapper propagates Zenzic's exit codes without remapping. Exit 1 (quality) obeys `fail-on-error`. Exit 2 (credential) and exit 3 (path traversal) terminate the job regardless of `fail-on-error: false` or `--exit-zero` — security findings are never suppressed at the enforcement boundary.
 
@@ -38,7 +38,7 @@ Run Zenzic SAST and graph integrity analysis in CI — surfacing results directl
 
 | Feature | Category | Description |
 |---|---|---|
-| **Security Scanning (SAST)** | Security | Detects hardcoded tokens (Z201) and path traversal (Z202/Z203); exits 2/3 survive `fail-on-error: false` |
+| **Security Scanning** | Security | Detects hardcoded tokens (Z201) and path traversal (Z202/Z203); exits 2/3 survive `fail-on-error: false` |
 | **Graph Topology Analysis** | Topology | Virtual Site Map (VSM) verifies cross-file links, orphan pages, and dead navigation graph nodes |
 | **Deterministic CI/CD Enforcement** | CI/CD | Zero-DBT quality gate ensuring bit-for-bit reproducible enforcement across build environments |
 | **Zero-setup install** | Execution | `uvx zenzic` — no Python toolchain required on the runner |
@@ -87,9 +87,9 @@ Zenzic Action surfaces findings directly where you work — no digging through C
 
 The following ready-to-use GitHub Actions workflow templates cover the four primary integration patterns for `zenzic-action`.
 
-### 1. Baseline Check (SAST & Topology Verification)
+### 1. Baseline Check (Security & Topology Verification)
 
-This blueprint provides static application security testing (SAST), link validation, and graph topology verification. It executes during pushes and PRs, ensuring no broken links, credential leaks, or invalid configurations enter the repository.
+This blueprint provides security scanning, link validation, and graph topology verification. It executes during pushes and PRs, ensuring no broken links, credential leaks, or invalid configurations enter the repository.
 
 ```yaml
 name: Zenzic Baseline Audit
