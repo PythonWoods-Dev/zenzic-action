@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 name: "Zenzic Documentation Quality Gate"
-description: "Deterministic Document Integrity Engine and SAST for Markdown/MDX graphs."
+description: "Deterministic Document Integrity Engine for Markdown/MDX graphs."
 author: "PythonWoods"
 
 branding:
@@ -16,7 +16,7 @@ inputs:
   version:
     description: "Zenzic version to use. Defaults to latest stable."
     required: false
-    default: "0.27.2" # x-zenzic-core-pin
+    default: "0.28.0" # x-zenzic-core-pin
   format:
     description: "Output format: 'text', 'json', or 'sarif'."
     required: false
@@ -60,6 +60,10 @@ inputs:
       Set to 'false' to opt out.
     required: false
     default: "true"
+  generate_audit_report:
+    description: "Generate a formal compliance audit report (zenzic-audit.json) and upload it as a workflow artifact."
+    required: false
+    default: "false"
 
 outputs:
   sarif-file:
@@ -109,6 +113,7 @@ runs:
         ZENZIC_AUDIT: ${{ inputs.audit }}
         ZENZIC_DIFF_BASE: ${{ inputs.diff-base }}
         ZENZIC_CHECK_STAMP: ${{ inputs.check-stamp }}
+        ZENZIC_GENERATE_AUDIT_REPORT: ${{ inputs.generate_audit_report }}
         INPUT_WORKING_DIRECTORY: ${{ inputs.working-directory }}
       run: bash "${{ github.action_path }}/zenzic-action-wrapper.sh"
 
@@ -118,3 +123,11 @@ runs:
       with:
         sarif_file: ${{ inputs.sarif-file }}
         category: zenzic-docs
+
+    - name: Upload Audit Report Artifact
+      if: inputs.generate_audit_report == 'true' && always()
+      uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
+      with:
+        name: zenzic-audit-report
+        path: ${{ inputs.working-directory }}/zenzic-audit.json
+        if-no-files-found: ignore

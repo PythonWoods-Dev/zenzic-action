@@ -277,6 +277,17 @@ except Exception:
   fi
 fi
 
+ZENZIC_GENERATE_AUDIT_REPORT="${ZENZIC_GENERATE_AUDIT_REPORT:-false}"
+
+# ── Audit Mode Artifact Generation ───────────────────────────────────────────
+if [ "${ZENZIC_GENERATE_AUDIT_REPORT}" = "true" ]; then
+  AUDIT_STRICT_ARG=""
+  if [ "${ZENZIC_STRICT}" = "true" ]; then
+    AUDIT_STRICT_ARG="--strict"
+  fi
+  uvx "${PKG}" audit --format json ${AUDIT_STRICT_ARG} > zenzic-audit.json 2>/dev/null || true
+fi
+
 # ── Exit Code Contract ────────────────────────────────────────────────────────
 # Security incidents (exit 2 and 3) are NEVER suppressed — not even by
 # fail-on-error: "false". All GitHub Action outputs are written before exit.

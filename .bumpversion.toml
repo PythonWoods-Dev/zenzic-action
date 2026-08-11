@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 [tool.bumpversion]
-current_version = "2.11.2"
+current_version = "2.12.0"
 parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)"
 serialize = ["{major}.{minor}.{patch}"]
 
@@ -24,10 +24,13 @@ regex = true
 
 [[tool.bumpversion.files]]
 filename = "CHANGELOG.md"
-search = "## [Unreleased]"
+search = '## \[Unreleased\](\s*\n\*Upcoming changes for the next release\.\*)?'
 replace = '''## [Unreleased]
 
+*Upcoming changes for the next release.*
+
 ## [{new_version}] - {now:%Y-%m-%d}'''
+regex = true
 
 [[tool.bumpversion.files]]
 filename = "RELEASE.md"
@@ -47,4 +50,4 @@ replace = '''| `{new_version}` (current) | ✅ All security fixes |
 # bump-my-version does NOT manage these files; they are listed here for discoverability.
 # ---------------------------------------------------------------------------
 [tool.bumpversion.custom_variables.core_version]
-current = "0.27.2"
+current = "0.28.0"
