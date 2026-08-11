@@ -9,7 +9,11 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 ## [Unreleased]
 
-*Upcoming changes for the next release.*
+### Added
+
+- **Audit Mode Artifact Generation (`V0.28-04`)**: Added new optional input `generate_audit_report` (default: `false`). When set to `true`, the action executes `zenzic audit --format json > zenzic-audit.json` and uploads `zenzic-audit.json` as a workflow artifact (`actions/upload-artifact`).
+- **Enterprise SARIF Integration (`V0.28-03`)**: Supported enriched SARIF v2.1.0 output with `helpUri`, `properties.category`, `properties.penalty`, and `fullDescription` fields mapped from Zenzic Core for GitHub Code Scanning.
+- **Policy-as-Code Support (`V0.28-01`)**: Aligned action wrapper to process `Z610` (REQUIRED_FRONTMATTER_MISSING) and `Z611` (FORBIDDEN_DOMAIN_REFERENCE) governance findings.
 
 ### Fixed
 

@@ -218,8 +218,11 @@ jobs:
 | `upload-sarif` | `"false"` | Automatically upload SARIF output to GitHub Code Scanning |
 | `guard-scan` | `"false"` | Triggers fatal pre-gate security scan (`zenzic guard scan`) |
 | `audit` | `"false"` | Sovereign Audit mode: bypasses all active suppressions |
+| `generate_audit_report` | `"false"` | Generate formal compliance audit JSON (`zenzic-audit.json`) and upload as workflow artifact |
 | `fail-on-error` | `"true"` | Controls job failure for quality findings (Exit 1) |
 | `config-file` | `""` | Optional path to custom `.zenzic.toml` configuration |
+
+*Note: Enriched Enterprise SARIF output (`v2.1.0`) automatically populates `helpUri`, `properties.category`, `properties.penalty`, and `fullDescription` fields for seamless GitHub Code Scanning integration.*
 
 ---
 
