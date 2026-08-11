@@ -9,6 +9,12 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 ## [Unreleased]
 
+*Upcoming changes for the next release.*
+
+### Fixed
+
+- **Path Sovereignty & AST Determinism**: Inherited core engine workspace boundary enforcement (`Z202`) to prevent symlink path traversal and ensure deterministic line-offset parsing in CI workflows.
+
 ### Changed
 
 - **Brand & Positioning Alignment (`V0.27-13`)**: Realigned Action description (`action.yml`) and README to position Zenzic as a **Deterministic Document Integrity Engine**, eradicating misleading "SAST" terminology (**Mirror Law ADR-020**).
