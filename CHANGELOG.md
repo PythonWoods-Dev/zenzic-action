@@ -9,6 +9,10 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 ## [Unreleased]
 
+*Upcoming changes for the next release.*
+
+## [2.12.0] - 2026-08-11
+
 ### Added
 
 - **Audit Mode Artifact Generation (`V0.28-04`)**: Added new optional input `generate_audit_report` (default: `false`). When set to `true`, the action executes `zenzic audit --format json > zenzic-audit.json` and uploads `zenzic-audit.json` as a workflow artifact (`actions/upload-artifact`).
