@@ -11,6 +11,19 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 *Upcoming changes for the next release.*
 
+## [2.12.1] - 2026-08-12
+
+Upcoming changes for the next patch release.
+
+### Fixed
+
+- **AST Parser (`Z511`)**: Inherited core engine fix for raw HTML block parsing to prevent false positive excessive sentence length warnings in CI workflows.
+- **Sentence Length Semicolon Boundary (`Z511`)**: Inherited core engine fix recognizing semicolons as sentence boundaries to eliminate false positive warnings in CI workflows.
+
+### Changed
+
+- **Policy-as-Code Template Alignment**: Aligned `[policies]` configuration template documentation for `Z610` and `Z611` with Zenzic Core v0.28.1.
+
 ## [2.12.0] - 2026-08-11
 
 Release v2.12.0 introduces compliance audit report artifact generation, enriched Enterprise SARIF v2.1.0 metadata, and Policy-as-Code Engine integration aligned with Zenzic Core v0.28.0.
