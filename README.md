@@ -41,11 +41,12 @@ Run Zenzic static analysis and graph integrity checks in CI — surfacing result
 | **Security Scanning** | Security | Detects hardcoded tokens (Z201) and path traversal (Z202/Z203); exits 2/3 survive `fail-on-error: false` |
 | **Graph Topology Analysis** | Topology | Virtual Site Map (VSM) verifies cross-file links, orphan pages, and dead navigation graph nodes |
 | **Deterministic CI/CD Enforcement** | CI/CD | Zero-DBT quality gate ensuring bit-for-bit reproducible enforcement across build environments |
+| **Policy-as-Code & Compliance Audit** | Governance | Evaluates `[policies]` rules (Z610, Z611) and generates formal compliance audit reports (`generate_audit_report: "true"`) |
 | **Zero-setup install** | Execution | `uvx zenzic` — no Python toolchain required on the runner |
-| **SARIF output** | Integration | Findings feed directly into GitHub Code Scanning |
+| **SARIF output** | Integration | Enriched SARIF v2.1.0 findings feed directly into GitHub Code Scanning |
 | **Sovereign Audit mode** | Security | `audit: "true"` bypasses suppressions to reveal unfiltered documentation graph state |
 | **PR annotations** | Feedback | Inline findings on diffs, colour-coded by severity |
-| **Version pinning** | Governance | Pin to exact release (e.g. `0.25.0`) for deterministic, reproducible CI gates |
+| **Version pinning** | Governance | Pin to exact release (e.g. `0.28.0`) for deterministic, reproducible CI gates |
 
 ---
 
@@ -110,7 +111,7 @@ jobs:
       - name: Run Zenzic Baseline
         uses: PythonWoods/zenzic-action@v2
         with:
-          version: "0.25.0"
+          version: "0.28.0"
           format: text
           fail-on-error: "true"
 ```
@@ -141,7 +142,7 @@ jobs:
       - name: Run Hardened Zenzic Audit
         uses: PythonWoods/zenzic-action@v2
         with:
-          version: "0.25.0"
+          version: "0.28.0"
           format: sarif
           upload-sarif: "true"
           guard-scan: "true"
@@ -171,7 +172,7 @@ jobs:
       - name: Run PR Governance Check
         uses: PythonWoods/zenzic-action@v2
         with:
-          version: "0.25.0"
+          version: "0.28.0"
           format: text
           fail-on-error: "true"
 ```
@@ -200,7 +201,7 @@ jobs:
       - name: Run Sovereign Audit
         uses: PythonWoods/zenzic-action@v2
         with:
-          version: "0.25.0"
+          version: "0.28.0"
           audit: "true"
           format: sarif
           upload-sarif: "true"
@@ -212,7 +213,7 @@ jobs:
 
 | Input | Default | Description |
 |:---|:---|:---|
-| `version` | `0.28.0` | Zenzic Core version to execute. Pin to a specific release (e.g. `0.25.0`) for reproducible CI. |
+| `version` | `"0.28.1"` | Zenzic Core version to execute. Pin to a specific release (e.g. `0.28.1`) for reproducible CI. |
 
 | `format` | `"text"` | Output format: `text`, `json`, or `sarif` |
 | `upload-sarif` | `"false"` | Automatically upload SARIF output to GitHub Code Scanning |
