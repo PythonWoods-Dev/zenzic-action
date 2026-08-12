@@ -9,7 +9,16 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 ## [Unreleased]
 
-*Upcoming changes for the next release.*
+Upcoming changes for the next patch release.
+
+### Fixed
+
+- **AST Parser (`Z511`)**: Inherited core engine fix for raw HTML block parsing to prevent false positive excessive sentence length warnings in CI workflows.
+- **Sentence Length Semicolon Boundary (`Z511`)**: Inherited core engine fix recognizing semicolons as sentence boundaries to eliminate false positive warnings in CI workflows.
+
+### Changed
+
+- **Policy-as-Code Template Alignment**: Aligned `[policies]` configuration template documentation for `Z610` and `Z611` with Zenzic Core v0.28.1.
 
 ## [2.12.0] - 2026-08-11
 

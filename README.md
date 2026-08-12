@@ -213,7 +213,7 @@ jobs:
 
 | Input | Default | Description |
 |:---|:---|:---|
-| `version` | `"0.28.1"` | Zenzic Core version to execute. Pin to a specific release (e.g. `0.28.1`) for reproducible CI. |
+| `version` | `0.28.0` | Zenzic Core version to execute. Pin to a specific release (e.g. `0.28.0`) for reproducible CI. |
 
 | `format` | `"text"` | Output format: `text`, `json`, or `sarif` |
 | `upload-sarif` | `"false"` | Automatically upload SARIF output to GitHub Code Scanning |
