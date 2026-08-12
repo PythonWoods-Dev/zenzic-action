@@ -73,7 +73,7 @@ def main() -> int:
 
         FileUpdate(
             path=repo_root / "README.md",
-            pattern=re.compile(r'(^\s{4}version: ")\d+\.\d+\.\d+("$)', re.MULTILINE),
+            pattern=re.compile(r'(^\s+version: ")\d+\.\d+\.\d+("$)', re.MULTILINE),
             replacement=rf"\g<1>{version}\g<2>",
             min_matches=1,
         ),
