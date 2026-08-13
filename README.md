@@ -41,7 +41,7 @@ Run Zenzic static analysis and graph integrity checks in CI — surfacing result
 | **Security Scanning** | Security | Detects hardcoded tokens (Z201) and path traversal (Z202/Z203); exits 2/3 survive `fail-on-error: false` |
 | **Graph Topology Analysis** | Topology | Virtual Site Map (VSM) verifies cross-file links, orphan pages, and dead navigation graph nodes |
 | **Deterministic CI/CD Enforcement** | CI/CD | Zero-DBT quality gate ensuring bit-for-bit reproducible enforcement across build environments |
-| **Policy-as-Code & Compliance Audit** | Governance | Evaluates `[policies]` rules (Z610, Z611) and generates formal compliance audit reports (`generate_audit_report: "true"`) |
+| **Policy-as-Code & Compliance Audit** | Governance | Evaluates all `[policies]` rules (Z610–Z616): required/forbidden frontmatter keys, RE2 schema validation, Zero-Trust external link enforcement (`allowed_external_domains`), URL scheme restrictions, and cross-namespace topological boundary violations via the Virtual Site Map. Generates formal compliance audit reports (`generate_audit_report: "true"`) |
 | **Zero-setup install** | Execution | `uvx zenzic` — no Python toolchain required on the runner |
 | **SARIF output** | Integration | Enriched SARIF v2.1.0 findings feed directly into GitHub Code Scanning |
 | **Sovereign Audit mode** | Security | `audit: "true"` bypasses suppressions to reveal unfiltered documentation graph state |
