@@ -29,14 +29,8 @@ fail_under = 100
 # respect_vcs_ignore = true
 # validate_same_page_anchors = true
 
-# External URLs excluded from the broken-link check (applies only with --strict)
-excluded_external_urls = [
-    # GitHub repo URLs return 429 (rate-limited) in CI.
-    "https://github.com/PythonWoods/zenzic-action",
-    "https://github.com/PythonWoods/zenzic",
-    # TODO: Remove post-deploy (Temporary exemption for unreleased pages).
-    "https://zenzic.dev/docs/reference/zenzic-action",
-]
+excluded_external_urls = []
+
 
 # Z204 Privacy Gate — terms that must never appear in published docs.
 # forbidden_patterns = []
