@@ -11,6 +11,11 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 *Upcoming changes for the next release.*
 
+### Changed
+
+- **Core Baseline Alignment**: Realigned default pinned Zenzic Core dependency to `v0.29.1`, inheriting core engine fixes for `Z401` (Missing Directory Index) false positives on dynamic directories.
+
+
 ## [2.13.0] - 2026-08-13
 
 Release notes for the `v2.13.0` release of `zenzic-action`.
