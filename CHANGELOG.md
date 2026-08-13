@@ -11,6 +11,8 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 *Upcoming changes for the next release.*
 
+## [2.13.0] - 2026-08-13
+
 ### Added
 
 - **Policy-as-Code Engine Alignment (`v0.29.0`)**: Aligned the GitHub Action with Zenzic Core `v0.29.0`, enabling CI/CD enforcement and automated PR checks for the new Policy-as-Code governance rules (`Z612`–`Z616`).
