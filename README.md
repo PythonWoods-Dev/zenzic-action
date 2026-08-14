@@ -60,7 +60,7 @@ The minimal configuration — zero Python setup, SARIF to Code Scanning in one s
 - name: Run Zenzic Documentation Quality Gate
   uses: PythonWoods/zenzic-action@v2
   with:
-    version: "0.29.0"
+    version: "0.29.1"
     format: sarif
     upload-sarif: "true"
   permissions:
@@ -111,7 +111,7 @@ jobs:
       - name: Run Zenzic Baseline
         uses: PythonWoods/zenzic-action@v2
         with:
-          version: "0.29.0"
+          version: "0.29.1"
           format: text
           fail-on-error: "true"
 ```
@@ -142,7 +142,7 @@ jobs:
       - name: Run Hardened Zenzic Audit
         uses: PythonWoods/zenzic-action@v2
         with:
-          version: "0.29.0"
+          version: "0.29.1"
           format: sarif
           upload-sarif: "true"
           guard-scan: "true"
@@ -172,7 +172,7 @@ jobs:
       - name: Run PR Governance Check
         uses: PythonWoods/zenzic-action@v2
         with:
-          version: "0.29.0"
+          version: "0.29.1"
           format: text
           fail-on-error: "true"
 ```
@@ -201,7 +201,7 @@ jobs:
       - name: Run Sovereign Audit
         uses: PythonWoods/zenzic-action@v2
         with:
-          version: "0.29.0"
+          version: "0.29.1"
           audit: "true"
           format: sarif
           upload-sarif: "true"
@@ -213,7 +213,7 @@ jobs:
 
 | Input | Default | Description |
 |:---|:---|:---|
-| `version` | `0.29.0` | Zenzic Core version to execute. Pin to a specific release (e.g. `0.28.0`) for reproducible CI. |
+| `version` | `0.29.1` | Zenzic Core version to execute. Pin to a specific release (e.g. `0.28.0`) for reproducible CI. |
 
 | `format` | `"text"` | Output format: `text`, `json`, or `sarif` |
 | `upload-sarif` | `"false"` | Automatically upload SARIF output to GitHub Code Scanning |
