@@ -29,7 +29,9 @@ replace = '''## [Unreleased]
 
 *Upcoming changes for the next release.*
 
-## [{new_version}] - {now:%Y-%m-%d}'''
+## [{new_version}] - {now:%Y-%m-%d}
+
+Release notes for the `v{new_version}` release of `zenzic-action`.'''
 regex = true
 
 [[tool.bumpversion.files]]
