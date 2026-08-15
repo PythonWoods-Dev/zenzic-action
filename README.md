@@ -67,7 +67,7 @@ jobs:
       - name: Run Zenzic Static Analyzer
         uses: PythonWoods/zenzic-action@v2
         with:
-          version: "0.30.0"
+          version: "0.29.1"
           format: "sarif"
           upload-sarif: "true"
 ```
@@ -77,6 +77,8 @@ jobs:
 ---
 
 ## 🎯 Immediate Benefits
+
+Integrating Zenzic into your CI/CD workflow delivers immediate security, quality, and authoring guarantees:
 
 ### 1. Zero-Leak Security Enforcement
 Hardcoded API keys, tokens, and credentials (`Z201`) immediately trigger **Exit Code 2**, halting the CI pipeline instantly. Security violations bypass all suppression budgets and cannot be overridden by `--exit-zero`.
@@ -100,22 +102,24 @@ Track your documentation health over time with mathematical rigor (0–100 score
 
 ## 🛠️ Action Configuration Reference
 
+Configure all inputs and outputs for `zenzic-action` within your workflow definition:
+
 ### Inputs
 
-| Input | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `version` | string | `"0.29.1"` | Exact Zenzic Core version to execute. Pin to a specific release for reproducible CI gates. |
-| `working-directory` | string | `"."` | Relative path to directory where Zenzic should run (useful for monorepos). |
-| `format` | string | `"sarif"` | Output format: `sarif`, `text`, or `json`. |
-| `sarif-file` | string | `"zenzic-results.sarif"` | Relative path inside the workspace for SARIF output. |
-| `upload-sarif` | boolean | `"true"` | Upload SARIF results to GitHub Code Scanning (requires `security-events: write`). |
-| `strict` | boolean | `"false"` | Exit non-zero on warnings as well as errors. |
-| `fail-on-error` | boolean | `"true"` | Fail the workflow step if Zenzic detects quality errors. |
-| `config-file` | string | `""` | Optional path to custom `.zenzic.toml` (auto-discovers root `.zenzic.toml` if omitted). |
-| `audit` | boolean | `"false"` | Sovereign Audit mode: bypasses all inline suppressions to reveal unfiltered documentation graph state. |
-| `guard-scan` | boolean | `"false"` | Run `zenzic guard scan` pre-check for credentials and forbidden patterns. Failures are fatal. |
-| `check-stamp` | boolean | `"true"` | Verify documentation badge score freshness (`zenzic score --check-stamp`). |
-| `generate_audit_report` | boolean | `"false"` | Generate formal compliance report (`zenzic-audit.json`) and upload as workflow artifact. |
+| Input | Default | Description |
+|:---|:---|:---|
+| `version` | `0.29.1` | Exact Zenzic Core version to execute. Pin to a specific release for reproducible CI gates. |
+| `working-directory` | `.` | Relative path to directory where Zenzic should run (useful for monorepos). |
+| `format` | `sarif` | Output format: `sarif`, `text`, or `json`. |
+| `sarif-file` | `zenzic-results.sarif` | Relative path inside the workspace for SARIF output. |
+| `upload-sarif` | `true` | Upload SARIF results to GitHub Code Scanning (requires `security-events: write`). |
+| `strict` | `false` | Exit non-zero on warnings as well as errors. |
+| `fail-on-error` | `true` | Fail the workflow step if Zenzic detects quality errors. |
+| `config-file` | `""` | Optional path to custom `.zenzic.toml` (auto-discovers root `.zenzic.toml` if omitted). |
+| `audit` | `false` | Sovereign Audit mode: bypasses all inline suppressions to reveal unfiltered documentation graph state. |
+| `guard-scan` | `false` | Run `zenzic guard scan` pre-check for credentials and forbidden patterns. Failures are fatal. |
+| `check-stamp` | `true` | Verify documentation badge score freshness (`zenzic score --check-stamp`). |
+| `generate_audit_report` | `false` | Generate formal compliance report (`zenzic-audit.json`) and upload as workflow artifact. |
 
 ### Outputs
 
@@ -130,6 +134,8 @@ Track your documentation health over time with mathematical rigor (0–100 score
 ---
 
 ## 📋 Ready-to-Use Workflow Blueprints
+
+Select the appropriate integration pattern for your repository requirements:
 
 ### Blueprint 1: Strict Pull Request Quality Gate
 
@@ -157,7 +163,7 @@ jobs:
       - name: Verify Documentation Integrity
         uses: PythonWoods/zenzic-action@v2
         with:
-          version: "0.30.0"
+          version: "0.29.1"
           strict: "true"
           fail-under: 95
           upload-sarif: "true"
@@ -184,7 +190,7 @@ jobs:
       - name: Run Sovereign Audit
         uses: PythonWoods/zenzic-action@v2
         with:
-          version: "0.30.0"
+          version: "0.29.1"
           audit: "true"
           format: "markdown"
 ```
