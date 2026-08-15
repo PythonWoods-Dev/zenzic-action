@@ -11,6 +11,10 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 *Upcoming changes for the next release.*
 
+### Changed
+
+- **Core Baseline Alignment (`v0.30.0`)**: Bumped default pinned Zenzic Core engine to `v0.30.0`, adding CI/CD quality gate enforcement and SARIF code scanning annotations for AST semantic linting (`Z513`–`Z520`) and Policy-as-Code rules (`Z617`–`Z619`).
+
 ## [2.13.1] - 2026-08-14
 
 Release notes for the `v2.13.1` release of `zenzic-action`.
