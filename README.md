@@ -67,7 +67,7 @@ jobs:
       - name: Run Zenzic Static Analyzer
         uses: PythonWoods/zenzic-action@v2
         with:
-          version: "0.29.1"
+          version: "0.30.0"
           format: "sarif"
           upload-sarif: "true"
 ```
@@ -108,7 +108,7 @@ Configure all inputs and outputs for `zenzic-action` within your workflow defini
 
 | Input | Default | Description |
 |:---|:---|:---|
-| `version` | `0.29.1` | Exact Zenzic Core version to execute. Pin to a specific release for reproducible CI gates. |
+| `version` | `0.30.0` | Exact Zenzic Core version to execute. Pin to a specific release for reproducible CI gates. |
 | `working-directory` | `.` | Relative path to directory where Zenzic should run (useful for monorepos). |
 | `format` | `sarif` | Output format: `sarif`, `text`, or `json`. |
 | `sarif-file` | `zenzic-results.sarif` | Relative path inside the workspace for SARIF output. |
@@ -163,7 +163,7 @@ jobs:
       - name: Verify Documentation Integrity
         uses: PythonWoods/zenzic-action@v2
         with:
-          version: "0.29.1"
+          version: "0.30.0"
           strict: "true"
           fail-under: 95
           upload-sarif: "true"
@@ -190,7 +190,7 @@ jobs:
       - name: Run Sovereign Audit
         uses: PythonWoods/zenzic-action@v2
         with:
-          version: "0.29.1"
+          version: "0.30.0"
           audit: "true"
           format: "markdown"
 ```
