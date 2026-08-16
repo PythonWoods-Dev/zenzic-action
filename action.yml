@@ -88,7 +88,7 @@ runs:
     - name: Install uv
       uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
       with:
-        enable-cache: "false"
+        enable-cache: "true"
 
     - name: Run Zenzic Secret Guard
       if: inputs.guard-scan == 'true'
@@ -98,7 +98,13 @@ runs:
       run: |
         PKG="zenzic"
         [[ "${ZENZIC_VERSION}" != "latest" ]] && PKG="zenzic==${ZENZIC_VERSION}"
-        uvx "${PKG}" guard scan
+        export UV_TOOL_DIR="${RUNNER_TEMP:-/tmp}/.zenzic-tool-dir"
+        export UV_TOOL_BIN_DIR="${RUNNER_TEMP:-/tmp}/.zenzic-bin-dir"
+        export PATH="${UV_TOOL_BIN_DIR}:${PATH}"
+        if ! command -v zenzic > /dev/null 2>&1; then
+          uv tool install --isolated --force --quiet "${PKG}"
+        fi
+        zenzic guard scan
 
     - name: Run Zenzic
       id: run-zenzic
@@ -120,6 +126,7 @@ runs:
     - name: Upload SARIF to GitHub Code Scanning
       if: inputs.format == 'sarif' && inputs.upload-sarif == 'true' && always()
       uses: github/codeql-action/upload-sarif@7c1e4cf0b20d7c1872b26569c00ba908797a59bf # v4
+      continue-on-error: true
       with:
         sarif_file: ${{ inputs.sarif-file }}
         category: zenzic-docs

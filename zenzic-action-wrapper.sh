@@ -47,6 +47,12 @@ ZENZIC_AUDIT="${ZENZIC_AUDIT:-false}"
 ZENZIC_DIFF_BASE="${ZENZIC_DIFF_BASE:-}"
 ZENZIC_CHECK_STAMP="${ZENZIC_CHECK_STAMP:-true}"
 
+# ── SemVer input validation (Defensive Sandbox) ─────────────────────────────
+if [ "${ZENZIC_VERSION}" != "latest" ] && ! [[ "${ZENZIC_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([a-zA-Z0-9.-]+)?$ ]]; then
+  echo "::error title=Zenzic — Invalid Version Specifier::'${ZENZIC_VERSION}' is not a valid Semantic Version (expected 'latest' or 'X.Y.Z')." >&2
+  exit 1
+fi
+
 # ── SARIF path sandbox guard (BUG-006 — Action SARIF Jailbreak) ────────────────
 # The sarif-file input is an output path. Any relative traversal (../../) or
 # absolute path (/) would allow a workflow to write outside the checkout
@@ -63,8 +69,8 @@ case "${ZENZIC_SARIF_FILE}" in
 esac
 
 # ── Package spec ──────────────────────────────────────────────────────────────
-# "latest" → bare `zenzic` so uvx resolves the most recent stable release.
-# Any other value is treated as an exact version pin: `zenzic==0.7.0`.
+# "latest" → bare `zenzic` so uv tool install resolves the most recent stable release.
+# Any other value is treated as an exact version pin: `zenzic==0.30.0`.
 PKG="zenzic"
 if [ "${ZENZIC_VERSION}" != "latest" ]; then
   PKG="zenzic==${ZENZIC_VERSION}"
@@ -117,20 +123,31 @@ set +f                                  # restore globbing
 EXIT_CODE=0
 FINDINGS=0
 
+# ── Tool Provisioning (Persistent Runner Isolation) ─────────────────────────
+# Provision the tool once into an isolated runner directory instead of invoking
+# uvx repeatedly across the workflow run.
+export UV_TOOL_DIR="${RUNNER_TEMP:-/tmp}/.zenzic-tool-dir"
+export UV_TOOL_BIN_DIR="${RUNNER_TEMP:-/tmp}/.zenzic-bin-dir"
+export PATH="${UV_TOOL_BIN_DIR}:${PATH}"
+
+if ! command -v zenzic > /dev/null 2>&1; then
+  uv tool install --isolated --force --quiet "${PKG}"
+fi
+
 # ── Execute ───────────────────────────────────────────────────────────────────
 # Make SARIF file path absolute before changing directory,
 # so it's always written relative to the workspace root.
 if [ -n "${ZENZIC_SARIF_FILE}" ]; then
-  ZENZIC_SARIF_FILE="$(realpath -m "${ZENZIC_SARIF_FILE}")"
+  ZENZIC_SARIF_FILE="$(realpath -m -- "${ZENZIC_SARIF_FILE}")"
 fi
 
 # Navigate to the specified working directory
-cd "${INPUT_WORKING_DIRECTORY}" || exit 1
+cd -- "${INPUT_WORKING_DIRECTORY}" || exit 1
 
 if [ "${ZENZIC_FORMAT}" = "sarif" ]; then
   # SARIF path: capture stdout to file; stderr streams to the step log.
   # `|| EXIT_CODE=$?` captures the exit code without triggering set -e.
-  uvx "${PKG}" check all --format sarif ${STRICT_FLAG} --ci ${AUDIT_FLAG} "${EXTRA_ARGS[@]}" \
+  zenzic check all --format sarif ${STRICT_FLAG} --ci ${AUDIT_FLAG} "${EXTRA_ARGS[@]}" \
     > "${ZENZIC_SARIF_FILE}" \
     || EXIT_CODE=$?
 
@@ -184,7 +201,7 @@ PYEOF
 
 else
   # Non-SARIF: stream output directly to the step log; capture exit code.
-  uvx "${PKG}" check all --format "${ZENZIC_FORMAT}" ${STRICT_FLAG} --ci ${AUDIT_FLAG} "${EXTRA_ARGS[@]}" \
+  zenzic check all --format "${ZENZIC_FORMAT}" ${STRICT_FLAG} --ci ${AUDIT_FLAG} "${EXTRA_ARGS[@]}" \
     || EXIT_CODE=$?
 
   # CAP detection is SARIF-only; always false for non-SARIF formats.
@@ -204,7 +221,7 @@ DEBT_PTS="0"
 if [ "${ZENZIC_AUDIT}" != "true" ] && { [ "${EXIT_CODE}" -eq 0 ] || [ "${EXIT_CODE}" -eq 1 ]; }; then
   SCORE_EXIT=0
   SCORE_OUTPUT=""
-  SCORE_OUTPUT=$(uvx "${PKG}" score --format json --ci 2>/dev/null) || SCORE_EXIT=$?
+  SCORE_OUTPUT=$(zenzic score --format json --ci 2>/dev/null) || SCORE_EXIT=$?
 
   if [ -n "${SCORE_OUTPUT}" ]; then
     SCORE=$(echo "${SCORE_OUTPUT}" | python3 -c "
@@ -236,7 +253,7 @@ fi
 # Skipped in audit mode (badges are not relevant for suppression-bypassed runs).
 if [ "${ZENZIC_CHECK_STAMP}" = "true" ] && [ "${ZENZIC_AUDIT}" != "true" ]; then
   STAMP_EXIT=0
-  uvx "${PKG}" score --check-stamp --ci || STAMP_EXIT=$?
+  zenzic score --check-stamp --ci || STAMP_EXIT=$?
   if [ "${STAMP_EXIT}" -ne 0 ]; then
     echo "::error::Badge freshness check failed. Run 'zenzic score --stamp' locally and commit the result."
     EXIT_CODE="${STAMP_EXIT}"
@@ -252,7 +269,7 @@ if [ "${ZENZIC_AUDIT}" != "true" ] && { [ "${EXIT_CODE}" -eq 0 ] || [ "${EXIT_CO
   if [ "${ZENZIC_FORMAT}" = "json" ] || [ -n "${ZENZIC_DIFF_BASE}" ]; then
     DIFF_EXIT=0
     DIFF_OUTPUT=""
-    DIFF_OUTPUT=$(uvx "${PKG}" diff --format json "${DIFF_BASE_ARGS[@]}" 2>/dev/null) || DIFF_EXIT=$?
+    DIFF_OUTPUT=$(zenzic diff --format json "${DIFF_BASE_ARGS[@]}" 2>/dev/null) || DIFF_EXIT=$?
 
     if [ -n "${DIFF_OUTPUT}" ]; then
       SCORE=$(echo "${DIFF_OUTPUT}" | python3 -c "
@@ -285,7 +302,7 @@ if [ "${ZENZIC_GENERATE_AUDIT_REPORT}" = "true" ]; then
   if [ "${ZENZIC_STRICT}" = "true" ]; then
     AUDIT_STRICT_ARG="--strict"
   fi
-  uvx "${PKG}" audit --format json ${AUDIT_STRICT_ARG} > zenzic-audit.json 2>/dev/null || true
+  zenzic audit --format json ${AUDIT_STRICT_ARG} > zenzic-audit.json 2>/dev/null || true
 fi
 
 # ── Exit Code Contract ────────────────────────────────────────────────────────

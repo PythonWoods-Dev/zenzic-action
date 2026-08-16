@@ -46,6 +46,11 @@ search = '''| `{current_version}` (current) | ✅ All security fixes |
 replace = '''| `{new_version}` (current) | ✅ All security fixes |
 | `< {new_version}` | ❌ End of life — no support |'''
 
+[[tool.bumpversion.files]]
+filename = ".github/ISSUE_TEMPLATE/bug_report.yml"
+search = 'placeholder: "v{current_version}"'
+replace = 'placeholder: "v{new_version}"'
+
 # ---------------------------------------------------------------------------
 # Core pin — state tracking only.
 # Actual updates are performed by `just pin-core <version>`.

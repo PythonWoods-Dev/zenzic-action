@@ -16,7 +16,7 @@ body:
     attributes:
       label: Action ref used
       description: "The tag or SHA used in `uses: PythonWoods/zenzic-action@<ref>`"
-      placeholder: "v1.1.0"
+      placeholder: "v2.14.0"
     validations:
       required: true
 
