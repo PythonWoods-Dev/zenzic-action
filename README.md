@@ -72,7 +72,7 @@ jobs:
           upload-sarif: "true"
 ```
 
-*Zero toolchain configuration required. The action executes in an isolated environment via `uvx` without needing Python pre-installed on the runner.*
+*Zero toolchain configuration required. The action executes in an isolated environment via `uvx` and automatically leverages aggressive local caching—requiring zero manual `actions/cache` or Python environment setup.*
 
 ---
 
@@ -87,7 +87,7 @@ Hardcoded API keys, tokens, and credentials (`Z201`) immediately trigger **Exit 
 Findings are uploaded directly to **GitHub Code Scanning (SARIF v2.1.0)**. PR reviewers see actionable annotations on the exact line and file with remediation instructions—no digging through raw terminal logs.
 
 <p align="center">
-  <img alt="GitHub Code Scanning showing Zenzic findings" src="assets/sarif-showcase.svg?v=2" width="800">
+  <img alt="Zenzic SARIF PR Annotation" src="assets/sarif-showcase.svg" width="800">
 </p>
 
 ### 3. Full Topological & Semantic Validation
@@ -193,6 +193,47 @@ jobs:
           version: "0.30.0"
           audit: "true"
           format: "markdown"
+```
+
+### Blueprint 3: Monorepo Documentation Matrix
+
+Run parallel, isolated documentation audits across multiple sub-projects or service directories using GitHub Actions `strategy.matrix` and `working-directory`:
+
+```yaml
+name: Monorepo Documentation Matrix Gate
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  audit-monorepo:
+    name: Audit (${{ matrix.project.name }})
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - name: "core-docs"
+            path: "docs"
+          - name: "frontend-docs"
+            path: "services/frontend/docs"
+          - name: "backend-api-docs"
+            path: "services/backend/docs"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify Documentation Integrity
+        uses: PythonWoods/zenzic-action@v2
+        with:
+          version: "0.30.0"
+          working-directory: ${{ matrix.project.path }}
+          upload-sarif: "true"
+          sarif-file: "zenzic-${{ matrix.project.name }}.sarif"
 ```
 
 ---

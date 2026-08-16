@@ -7,10 +7,6 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 ---
 
-## [Unreleased]
-
-*Upcoming changes for the next release.*
-
 ## [2.14.0] - 2026-08-15
 
 Release notes for the `v2.14.0` release of `zenzic-action`.
