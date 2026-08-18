@@ -187,7 +187,7 @@ check *args:
     fi
 
     echo "🛡️  [Zenzic] Local core detected. Using: $CORE_PATH"
-    uv run --project "$CORE_PATH" zenzic check all --strict ${ZENZIC_EXTRA_ARGS:-} {{args}}
+    uv run --project "$CORE_PATH" zenzic check all --strict --no-header ${ZENZIC_EXTRA_ARGS:-} {{args}}
 
 # Test suite (action-level checks via nox)
 test:

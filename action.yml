@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 PythonWoods <dev@pythonwoods.dev>
 # SPDX-License-Identifier: Apache-2.0
 name: "Zenzic Documentation Quality Gate"
-description: "Deterministic Document Integrity Engine for Markdown/MDX graphs."
+description: "Deterministic Documentation Quality Platform (DQP) for Markdown/MDX graphs."
 author: "PythonWoods"
 
 branding:
@@ -16,7 +16,7 @@ inputs:
   version:
     description: "Zenzic version to use. Defaults to latest stable."
     required: false
-    default: "0.29.1" # x-zenzic-core-pin
+    default: "0.30.0" # x-zenzic-core-pin
   format:
     description: "Output format: 'text', 'json', or 'sarif'."
     required: false
@@ -86,9 +86,9 @@ runs:
   using: "composite"
   steps:
     - name: Install uv
-      uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+      uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
       with:
-        enable-cache: "false"
+        enable-cache: "true"
 
     - name: Run Zenzic Secret Guard
       if: inputs.guard-scan == 'true'
@@ -98,7 +98,13 @@ runs:
       run: |
         PKG="zenzic"
         [[ "${ZENZIC_VERSION}" != "latest" ]] && PKG="zenzic==${ZENZIC_VERSION}"
-        uvx "${PKG}" guard scan
+        export UV_TOOL_DIR="${RUNNER_TEMP:-/tmp}/.zenzic-tool-dir"
+        export UV_TOOL_BIN_DIR="${RUNNER_TEMP:-/tmp}/.zenzic-bin-dir"
+        export PATH="${UV_TOOL_BIN_DIR}:${PATH}"
+        if ! command -v zenzic > /dev/null 2>&1; then
+          uv tool install --isolated --force --quiet "${PKG}"
+        fi
+        zenzic guard scan
 
     - name: Run Zenzic
       id: run-zenzic
@@ -120,13 +126,14 @@ runs:
     - name: Upload SARIF to GitHub Code Scanning
       if: inputs.format == 'sarif' && inputs.upload-sarif == 'true' && always()
       uses: github/codeql-action/upload-sarif@7c1e4cf0b20d7c1872b26569c00ba908797a59bf # v4
+      continue-on-error: true
       with:
         sarif_file: ${{ inputs.sarif-file }}
         category: zenzic-docs
 
     - name: Upload Audit Report Artifact
       if: inputs.generate_audit_report == 'true' && always()
-      uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
         name: zenzic-audit-report
         path: ${{ inputs.working-directory }}/zenzic-audit.json

@@ -70,3 +70,6 @@ uv.lock
 # AI Agent Private Memory
 .clinerules
 .github/agents/
+
+# AI Control Plane — never commit to version control
+.gemini/

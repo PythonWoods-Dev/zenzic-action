@@ -11,6 +11,21 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 *Upcoming changes for the next release.*
 
+## [2.14.0] - 2026-08-18
+
+Release notes for the `v2.14.0` release of `zenzic-action`.
+
+### Changed
+
+- **Core Baseline Alignment (`v0.30.0`)**: Bumped default pinned Zenzic Core engine to `v0.30.0`, adding CI/CD quality gate enforcement and SARIF code scanning annotations for AST semantic linting (`Z513`–`Z520`), Policy-as-Code rules (`Z617`–`Z619`), and sequential scan performance optimizations.
+- **Single Tool Provisioning (`uv tool install`)**: Replaced ephemeral multi-invocation `uvx` executions with a single, isolated tool installation (`uv tool install --isolated --force "zenzic==${ZENZIC_VERSION}"`), caching the binary across all step executions (`check`, `score`, `diff`, `audit`) and eliminating redundant network downloads.
+
+### Security
+
+- **Shell Injection Defense**: Hardened `zenzic-action-wrapper.sh` by adding strict `--` parameter delimiters to all commands handling user-provided path and version inputs (`cd --`, `realpath -m --`).
+- **SemVer Input Validation**: Added strict SemVer regex validation (`^[0-9]+\.[0-9]+\.[0-9]+([a-zA-Z0-9.-]+)?$`) to reject malformed or potentially malicious version strings before execution.
+- **Resilient SARIF Uploads**: Configured `continue-on-error: true` on SARIF upload steps so pull requests from fork repositories lacking `security-events: write` permissions do not fail the workflow gate.
+
 ## [2.13.1] - 2026-08-14
 
 Release notes for the `v2.13.1` release of `zenzic-action`.

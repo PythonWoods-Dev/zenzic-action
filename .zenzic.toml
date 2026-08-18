@@ -115,7 +115,9 @@ brand_obsolescence = [
 "**" = ["Z106"]
 "README.md" = ["Z101"]
 "assets/**" = ["Z405"]
-"changelogs/**" = ["Z410", "Z411"]
+"changelogs/**" = ["Z410", "Z411", "Z513"]
+"CHANGELOG.md" = ["Z513"]
+"CODE_OF_CONDUCT.md" = ["Z411", "Z511"]
 
 # Governance Playbook:
 # https://zenzic.dev/developers/how-to/release-governance-protocol

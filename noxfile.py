@@ -92,6 +92,7 @@ def _run_zenzic_check(session: nox.Session) -> None:
         "check",
         "all",
         "--strict",
+        "--no-header",
         external=True,
     )
 

@@ -3,25 +3,29 @@
 <!-- markdownlint-disable MD041 -->
 
 ## Description
-<!-- Describe the architectural intent of the changes. Link the approved Issue. -->
-Closes #
+<!-- Describe the architectural intent of the changes and provide context. -->
+Fixes #
 
 ## Type of Change
-- [ ] Bug fix (non-breaking)
-- [ ] New feature (non-breaking)
-- [ ] Breaking change (fix or feature that breaks backward compatibility)
-- [ ] Documentation / D.I.A. update
-- [ ] Technical Debt removal / Refactoring
 
-## Engineering Quality Gates
-- [ ] **TDD / Tests:** New or updated tests cover these changes. The test suite passes locally.
-- [ ] **Static Analysis:** `uv run zenzic check all --strict` passes. The DQS score has not regressed.
-- [ ] **D.I.A. (Documentation Impact Analysis):** If this PR modifies CLI, rules, or core behavior, the user documentation has been updated simultaneously.
-- [ ] **Zero Subprocess:** No unauthorized shell executions or non-Python dependencies are introduced.
+- [ ] Bug fix (non-breaking change fixing an issue)
+- [ ] New feature (non-breaking change adding functionality)
+- [ ] Breaking change (fix or feature breaking backward compatibility)
+- [ ] Documentation update
+- [ ] Refactoring / Tech Debt removal
+- [ ] CI/CD workflow improvement
 
-## Enterprise Governance
+## Governance & Compliance Checklist
+
+- [ ] **DCO & Signatures:** All commits are signed with DCO (`git commit -s`) and GPG/SSH (`git commit -S`).
 - [ ] **Issue-First:** This PR addresses an explicitly approved Issue.
-- [ ] **Signatures:** Every commit is cryptographically signed (GPG/SSH).
-- [ ] **DCO:** Every commit contains a valid `Signed-off-by:` line.
-- [ ] **Semantics:** Commit messages follow the Conventional Commits specification.
+- [ ] **Changelog:** I have updated `CHANGELOG.md` under the `## [Unreleased]` section.
+- [ ] **Commit Standards:** Commit messages strictly follow the Conventional Commits specification.
 - [ ] **Absolute Ownership:** I have verified and can architecturally justify every single line of code. No unreviewed AI-generated code is included.
+
+## Architectural Quality Gates (GitHub Action)
+
+- [ ] **Version Pinning Integrity:** I have not altered the strict core version pinning without approval.
+- [ ] **SARIF & Annotation Standards:** SARIF output complies strictly with Static Analysis Results Interchange Format (SARIF) v2.1.0 specification.
+- [ ] **Local Quality Pipeline:** `just test` (or workflow validation suite) passes without errors.
+- [ ] **Fail-Closed Security:** Security violations (exit codes 2 and 3) propagate unconditionally to the GitHub runner.

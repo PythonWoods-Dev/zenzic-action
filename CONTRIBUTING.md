@@ -25,7 +25,7 @@ Zenzic is structured across three independent, dedicated repositories:
 
 ## Core Dependency & Sovereign Local-Core Model
 
-Runtime distribution for downstream users remains pinned to published Zenzic Core releases (currently pinned to **Zenzic Core `v0.25.0`**).
+Runtime distribution for downstream users remains pinned to published Zenzic Core releases (currently pinned to **Zenzic Core `v0.30.0`**).
 
 Repository quality gates (self-check, just, nox), however, use the shared sovereign local-core model.
 
