@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 <p align="center">
   <a href="https://github.com/PythonWoods/zenzic-action">
     <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="./assets/zenzic-wordmark-action-dark.svg">
       <source media="(prefers-color-scheme: light)" srcset="./assets/zenzic-wordmark-action.svg">
       <img alt="Zenzic / action" src="./assets/zenzic-wordmark-action-dark.svg" width="350">
     </picture>
