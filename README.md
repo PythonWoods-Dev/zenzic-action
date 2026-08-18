@@ -13,8 +13,8 @@ SPDX-License-Identifier: Apache-2.0
 </p>
 
 <p align="center">
-  <strong>Deterministic Documentation Quality Gate & Credential Scanner for GitHub Actions.</strong><br>
-  <em>Never ship a broken link, leaked API key, or invalid documentation page to production again.</em>
+  <strong>Deterministic Documentation Quality Platform (DQP) for GitHub Actions.</strong><br>
+  <em>Enforce semantic correctness, topological link integrity, and credential safety on every pull request.</em>
 </p>
 
 <p align="center">
@@ -31,11 +31,11 @@ SPDX-License-Identifier: Apache-2.0
 
 ---
 
-## Protect Your Documentation at the CI/CD Gate
+## Documentation Quality Platform at the CI/CD Gate
 
-Technical documentation is mission-critical infrastructure. Broken links frustrate developers, leaked API keys cause catastrophic breaches, and inconsistent metadata degrades SEO.
+Technical documentation is a continuously validated engineering asset. Broken links, orphaned pages, leaked API keys, and invalid metadata degrade developer trust and damage product integrity.
 
-**`zenzic-action`** is a zero-configuration GitHub Action that enforces documentation integrity on every push and pull request. It analyzes your entire documentation graph in seconds, blocks defective merges, and annotates code changes directly inside GitHub Code Scanning.
+**`zenzic-action`** integrates the **Documentation Quality Platform (DQP)** into GitHub Actions workflows. It compiles and evaluates your documentation graph in seconds, blocks defective merges, and emits enriched SARIF v2.1.0 telemetry directly to GitHub Code Scanning.
 
 ---
 
