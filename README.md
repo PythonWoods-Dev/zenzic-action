@@ -14,8 +14,8 @@ SPDX-License-Identifier: Apache-2.0
 </p>
 
 <p align="center">
-  <strong>Deterministic Documentation Quality Platform (DQP) for GitHub Actions.</strong><br>
-  <em>Enforce semantic correctness, topological link integrity, and credential safety on every pull request.</em>
+  <strong>Formatters handle syntax. Prose linters handle grammar. Zenzic protects the graph—and optionally enforces lightweight editorial policy without a separate tool.</strong><br>
+  <em>CI/CD quality gate for Specification-Driven Development (SDD), table contracts, graph topology, and credential safety on every pull request.</em>
 </p>
 
 <p align="center">
@@ -32,11 +32,14 @@ SPDX-License-Identifier: Apache-2.0
 
 ---
 
-## Documentation Quality Platform at the CI/CD Gate
+## Documentation Graph & SDD Quality Gate
 
-Technical documentation is a continuously validated engineering asset. Broken links, orphaned pages, leaked API keys, and invalid metadata degrade developer trust and damage product integrity.
+AI models generate volume; Zenzic verifies truth. In modern Specification-Driven Development (SDD), documentation repositories act as the architectural source of truth for software systems and autonomous agent swarms.
 
-**`zenzic-action`** integrates the **Documentation Quality Platform (DQP)** into GitHub Actions workflows. It compiles and evaluates your documentation graph in seconds, blocks defective merges, and emits enriched SARIF v2.1.0 telemetry directly to GitHub Code Scanning.
+**`zenzic-action`** integrates the **Documentation Quality Platform (DQP)** into GitHub Actions workflows. It validates Markdown table contracts (`Z521`), allowed cell enums (`Z522`), heading sequence hierarchies (`Z523`), cross-directory traceability (`Z412`), and credential leaks in seconds, blocking defective merges and emitting enriched SARIF v2.1.0 telemetry directly to GitHub Code Scanning.
+
+> [!NOTE]
+> **Ecosystem Distribution Context**: `zenzic-action` serves as the automated CI-side quality gate for pull request enforcement. For local developer workflows, we recommend pairing this Action with **Track 1 (Pre-commit Hook `zenzic-guard`)** or **Track 2 (Project Dependency `zenzic>=0.31,<0.32`)** to catch defects locally before pushing commits.
 
 ---
 
@@ -68,7 +71,7 @@ jobs:
       - name: Run Zenzic Static Analyzer
         uses: PythonWoods/zenzic-action@v2
         with:
-          version: "0.30.0"
+          version: "0.31.0"
           format: "sarif"
           upload-sarif: "true"
 ```
