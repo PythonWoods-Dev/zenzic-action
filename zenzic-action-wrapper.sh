@@ -337,7 +337,7 @@ MDEOF
   cat >> "${GITHUB_STEP_SUMMARY}" <<'MDEOF'
 | **Rule** | Z201 — Credential Scanner |
 | **Action** | Remove the secret and rotate it immediately |
-| **Reference** | https://zenzic.dev/docs/reference/finding-codes |
+| **Reference** | https://zenzic.dev/reference/finding-codes/ |
 MDEOF
   exit 2
 fi
@@ -363,7 +363,7 @@ MDEOF
   cat >> "${GITHUB_STEP_SUMMARY}" <<'MDEOF'
 | **Rule** | Z203 — Path Traversal Guard (fatal, targets an OS system directory) |
 | **Action** | Remove the offending path reference |
-| **Reference** | https://zenzic.dev/docs/reference/finding-codes |
+| **Reference** | https://zenzic.dev/reference/finding-codes/ |
 MDEOF
   exit 3
 fi
@@ -404,7 +404,7 @@ MDEOF
     printf '| **Findings** | %s |\n' "${FINDINGS}" >> "${GITHUB_STEP_SUMMARY}"
     printf '| **Score** | %s |\n' "${SCORE:-n/a}" >> "${GITHUB_STEP_SUMMARY}"
     cat >> "${GITHUB_STEP_SUMMARY}" <<'MDEOF'
-| **Reference** | https://zenzic.dev/docs/reference/finding-codes |
+| **Reference** | https://zenzic.dev/reference/finding-codes/ |
 MDEOF
   fi
 fi
