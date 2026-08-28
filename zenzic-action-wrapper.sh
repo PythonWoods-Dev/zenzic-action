@@ -35,6 +35,9 @@
 #   ZENZIC_AUDIT         "true" → pass --audit flag (bypasses all suppressions)
 #   ZENZIC_DIFF_BASE     Path to a JSON baseline file for zenzic diff comparison.
 #   ZENZIC_CHECK_STAMP   "true" → run 'zenzic score --check-stamp' after check all.
+#   ZENZIC_CONFIG_FILE   Path to a Zenzic TOML config file, passed as '--config' to every
+#                        zenzic invocation (check all, score, diff, audit). Relative to the
+#                        workspace only — absolute paths and '..' traversal are rejected.
 
 set -euo pipefail
 
@@ -48,6 +51,7 @@ ZENZIC_FAIL_ON_ERROR="${ZENZIC_FAIL_ON_ERROR:-true}"
 ZENZIC_AUDIT="${ZENZIC_AUDIT:-false}"
 ZENZIC_DIFF_BASE="${ZENZIC_DIFF_BASE:-}"
 ZENZIC_CHECK_STAMP="${ZENZIC_CHECK_STAMP:-true}"
+ZENZIC_CONFIG_FILE="${ZENZIC_CONFIG_FILE:-}"
 
 # ── SemVer input validation (Defensive Sandbox) ─────────────────────────────
 if [ "${ZENZIC_VERSION}" != "latest" ] && ! [[ "${ZENZIC_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([a-zA-Z0-9.-]+)?$ ]]; then
@@ -111,6 +115,29 @@ if [ -n "${ZENZIC_DIFF_BASE}" ]; then
   fi
 fi
 
+# ── config-file sandbox guard ──────────────────────────────────────────────────
+# config-file is a path to a TOML file inside the workspace. Reject absolute
+# paths and path traversal sequences to prevent reading files outside the checkout.
+CONFIG_ARGS=()
+if [ -n "${ZENZIC_CONFIG_FILE}" ]; then
+  case "${ZENZIC_CONFIG_FILE}" in
+    /*)
+      echo "::error title=Zenzic — config-file Jailbreak::config-file must be a relative path inside the workspace. Absolute paths are forbidden. Got: '${ZENZIC_CONFIG_FILE}'" >&2
+      exit 1
+      ;;
+    *../*|*/..|..)
+      echo "::error title=Zenzic — config-file Jailbreak::config-file must not contain path traversal sequences ('..').  Got: '${ZENZIC_CONFIG_FILE}'" >&2
+      exit 1
+      ;;
+  esac
+  if [ -f "${ZENZIC_CONFIG_FILE}" ]; then
+    CONFIG_ARGS=(--config "${ZENZIC_CONFIG_FILE}")
+  else
+    echo "::error title=Zenzic — config-file Not Found::config-file '${ZENZIC_CONFIG_FILE}' does not exist." >&2
+    exit 1
+  fi
+fi
+
 
 # ── Extra args passthrough (Sovereign Override) ──────────────────────────────
 # ZENZIC_EXTRA_ARGS is set by the caller's workflow (e.g. --exclude-url …).
@@ -149,7 +176,7 @@ cd -- "${INPUT_WORKING_DIRECTORY}" || exit 1
 if [ "${ZENZIC_FORMAT}" = "sarif" ]; then
   # SARIF path: capture stdout to file; stderr streams to the step log.
   # `|| EXIT_CODE=$?` captures the exit code without triggering set -e.
-  zenzic check all --format sarif ${STRICT_FLAG} --ci ${AUDIT_FLAG} "${EXTRA_ARGS[@]}" \
+  zenzic check all --format sarif ${STRICT_FLAG} --ci ${AUDIT_FLAG} "${CONFIG_ARGS[@]}" "${EXTRA_ARGS[@]}" \
     > "${ZENZIC_SARIF_FILE}" \
     || EXIT_CODE=$?
 
@@ -203,7 +230,7 @@ PYEOF
 
 else
   # Non-SARIF: stream output directly to the step log; capture exit code.
-  zenzic check all --format "${ZENZIC_FORMAT}" ${STRICT_FLAG} --ci ${AUDIT_FLAG} "${EXTRA_ARGS[@]}" \
+  zenzic check all --format "${ZENZIC_FORMAT}" ${STRICT_FLAG} --ci ${AUDIT_FLAG} "${CONFIG_ARGS[@]}" "${EXTRA_ARGS[@]}" \
     || EXIT_CODE=$?
 
   # CAP detection is SARIF-only; always false for non-SARIF formats.
@@ -223,7 +250,7 @@ DEBT_PTS="0"
 if [ "${ZENZIC_AUDIT}" != "true" ] && { [ "${EXIT_CODE}" -eq 0 ] || [ "${EXIT_CODE}" -eq 1 ]; }; then
   SCORE_EXIT=0
   SCORE_OUTPUT=""
-  SCORE_OUTPUT=$(zenzic score --format json --ci 2>/dev/null) || SCORE_EXIT=$?
+  SCORE_OUTPUT=$(zenzic score --format json --ci "${CONFIG_ARGS[@]}" 2>/dev/null) || SCORE_EXIT=$?
 
   if [ -n "${SCORE_OUTPUT}" ]; then
     SCORE=$(echo "${SCORE_OUTPUT}" | python3 -c "
@@ -255,7 +282,7 @@ fi
 # Skipped in audit mode (badges are not relevant for suppression-bypassed runs).
 if [ "${ZENZIC_CHECK_STAMP}" = "true" ] && [ "${ZENZIC_AUDIT}" != "true" ]; then
   STAMP_EXIT=0
-  zenzic score --check-stamp --ci || STAMP_EXIT=$?
+  zenzic score --check-stamp --ci "${CONFIG_ARGS[@]}" || STAMP_EXIT=$?
   if [ "${STAMP_EXIT}" -ne 0 ]; then
     echo "::error::Badge freshness check failed. Run 'zenzic score --stamp' locally and commit the result."
     EXIT_CODE="${STAMP_EXIT}"
@@ -271,7 +298,7 @@ if [ "${ZENZIC_AUDIT}" != "true" ] && { [ "${EXIT_CODE}" -eq 0 ] || [ "${EXIT_CO
   if [ "${ZENZIC_FORMAT}" = "json" ] || [ -n "${ZENZIC_DIFF_BASE}" ]; then
     DIFF_EXIT=0
     DIFF_OUTPUT=""
-    DIFF_OUTPUT=$(zenzic diff --format json "${DIFF_BASE_ARGS[@]}" 2>/dev/null) || DIFF_EXIT=$?
+    DIFF_OUTPUT=$(zenzic diff --format json "${DIFF_BASE_ARGS[@]}" "${CONFIG_ARGS[@]}" 2>/dev/null) || DIFF_EXIT=$?
 
     if [ -n "${DIFF_OUTPUT}" ]; then
       SCORE=$(echo "${DIFF_OUTPUT}" | python3 -c "
@@ -304,7 +331,7 @@ if [ "${ZENZIC_GENERATE_AUDIT_REPORT}" = "true" ]; then
   if [ "${ZENZIC_STRICT}" = "true" ]; then
     AUDIT_STRICT_ARG="--strict"
   fi
-  zenzic audit --format json ${AUDIT_STRICT_ARG} > zenzic-audit.json 2>/dev/null || true
+  zenzic audit --format json ${AUDIT_STRICT_ARG} "${CONFIG_ARGS[@]}" > zenzic-audit.json 2>/dev/null || true
 fi
 
 # ── Exit Code Contract ────────────────────────────────────────────────────────

@@ -119,7 +119,7 @@ Configure all inputs and outputs for `zenzic-action` within your workflow defini
 | `upload-sarif` | `true` | Upload SARIF results to GitHub Code Scanning (requires `security-events: write`). |
 | `strict` | `false` | Exit non-zero on warnings as well as errors. |
 | `fail-on-error` | `true` | Fail the workflow step if Zenzic detects quality errors. |
-| `config-file` | `""` | Optional path to custom `.zenzic.toml` (auto-discovers root `.zenzic.toml` if omitted). |
+| `config-file` | `""` | Optional path (relative to the workspace) to a TOML config file, passed as `--config` to zenzic. Falls back to normal `.zenzic.toml`/`pyproject.toml` discovery if omitted. |
 | `audit` | `false` | Sovereign Audit mode: bypasses all inline suppressions to reveal unfiltered documentation graph state. |
 | `guard-scan` | `false` | Run `zenzic guard scan` pre-check for credentials and forbidden patterns. Failures are fatal. |
 | `check-stamp` | `true` | Verify documentation badge score freshness (`zenzic score --check-stamp`). |
