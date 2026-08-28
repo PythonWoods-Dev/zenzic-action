@@ -12,9 +12,11 @@
 #      receives findings, even when the build fails with a security incident.
 #   4. Enforce the Zenzic Exit Code Contract with coherent UX:
 #        0  — clean (all checks passed)
-#        1  — documentation findings (broken links, orphan pages, dead refs, etc.)
+#        1  — documentation findings (broken links, orphan pages, dead refs, Z202
+#             ordinary path-boundary traversal — non-suppressible but stays Exit 1 — etc.)
 #        2  — SECURITY: credential detected — credential scanner / Z201 — NEVER suppressed
-#        3  — SECURITY: system path traversal — path traversal guard / Z202-203 — NEVER suppressed
+#        3  — SECURITY: system path traversal targeting an OS system directory — Z203
+#             only — NEVER suppressed. Z202 is deliberately not escalated here (see above).
 #        4  — QUALITY REGRESSION: zenzic diff detected a score drop vs baseline — blocks PR merge
 #
 #      For exit codes 2 and 3: if no findings were parsed from the SARIF file
@@ -346,7 +348,7 @@ if [ "${EXIT_CODE}" -eq 3 ]; then
   echo "score=${SCORE}" >> "${GITHUB_OUTPUT}"
   echo "suppression-debt-pts=${DEBT_PTS}" >> "${GITHUB_OUTPUT}"
   echo "cap-exceeded=false" >> "${GITHUB_OUTPUT}"
-  echo "::error title=Zenzic Boundary Breach — Z202/Z203 (Exit 3)::Path traversal or filesystem boundary violation detected. findings-count=${FINDINGS}. Exit 3 is non-suppressible per the Zenzic Exit Code Contract." >&2
+  echo "::error title=Zenzic Boundary Breach — Z203 (Exit 3)::Path traversal targeting an OS system directory detected. findings-count=${FINDINGS}. Exit 3 is non-suppressible per the Zenzic Exit Code Contract." >&2
   cat >> "${GITHUB_STEP_SUMMARY}" <<'MDEOF'
 ## ❌ Zenzic — Boundary Breach (Exit 3)
 
@@ -359,7 +361,7 @@ Exit 3 is **non-suppressible** — `fail-on-error: false` has no effect.
 MDEOF
   printf '| **Findings** | %s |\n' "${FINDINGS}" >> "${GITHUB_STEP_SUMMARY}"
   cat >> "${GITHUB_STEP_SUMMARY}" <<'MDEOF'
-| **Rules** | Z202/Z203 — Path Traversal Guard |
+| **Rule** | Z203 — Path Traversal Guard (fatal, targets an OS system directory) |
 | **Action** | Remove the offending path reference |
 | **Reference** | https://zenzic.dev/docs/reference/finding-codes |
 MDEOF
