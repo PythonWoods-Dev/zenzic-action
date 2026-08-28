@@ -9,7 +9,9 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 ## [Unreleased]
 
-*Upcoming changes for the next release.*
+### Fixed
+
+- **Z202/Z203 Exit-3 Messaging Conflation**: `zenzic-action-wrapper.sh`'s Exit Code Contract header comment, `::error` annotation, and job-summary table incorrectly attributed the Exit 3 (Boundary Breach) branch to both `Z202` and `Z203`. Only `Z203` (fatal, OS-system-directory traversal) ever triggers Exit 3 — `Z202` (ordinary docs-root-boundary traversal) is deliberately non-escalated and always stays Exit 1, matching Zenzic Core's own contract. No runtime findings were ever mishandled (a `Z202` finding could never reach the Exit 3 branch); this was a misleading-message-only defect that could cause a reader of CI output to misattribute which finding code caused a build failure.
 
 ## Historical Releases
 
