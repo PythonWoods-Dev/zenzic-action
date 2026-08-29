@@ -58,6 +58,19 @@ To maintain security, architectural integrity, and legal compliance, all contrib
 
 ---
 
+## Issue Templates
+
+Opening a new issue offers four templates:
+
+| Template | Use for |
+|:---|:---|
+| **Bug Report** | Unexpected behaviour in the action itself — wrong exit codes, malformed or missing SARIF output, an input not respected. |
+| **Feature Request** | Proposing a new input, output, or behaviour change. |
+| **Security Vulnerability** | A public-appropriate security issue (exit code bypass, path traversal, SARIF injection). High-severity issues (arbitrary code execution, secret exposure) go to the private [Security Advisory](https://github.com/PythonWoods/zenzic-action/security/advisories/new) instead — the template itself explains the split. |
+| **🛡️ Gate Bypass Post-Mortem** | Maintainer-only. Documents a Break-Glass bypass of the `just verify` Final Guard; not a contributor-facing issue type. |
+
+---
+
 ## First-Time Setup
 
 Install pre-commit hooks (run once after cloning):
