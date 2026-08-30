@@ -5,7 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Security Policy — zenzic-action
 
-This document defines the security disclosure process for `zenzic-action`. For the Zenzic Core security policy, see [github.com/PythonWoods/zenzic](https://github.com/PythonWoods/zenzic/blob/main/SECURITY.md).
+This document defines the security disclosure process for `zenzic-action`. For the Zenzic Core security policy, see [github.com/PythonWoods-Dev/zenzic](https://github.com/PythonWoods-Dev/zenzic/blob/main/SECURITY.md).
 
 ## Scope
 
@@ -13,7 +13,7 @@ This policy covers **zenzic-action** — the official GitHub Action that runs
 `zenzic check all` as a CI gate and uploads findings to GitHub Code Scanning via SARIF.
 
 For vulnerabilities in the **Zenzic engine** (Python, credential scanner, path-traversal
-protection), see the [core security policy](https://github.com/PythonWoods/zenzic/blob/main/SECURITY.md).
+protection), see the [core security policy](https://github.com/PythonWoods-Dev/zenzic/blob/main/SECURITY.md).
 
 ---
 
@@ -23,7 +23,7 @@ protection), see the [core security policy](https://github.com/PythonWoods/zenzi
 
 Report privately via:
 
-- **GitHub Security Advisories** (preferred): [github.com/PythonWoods/zenzic-action/security/advisories](https://github.com/PythonWoods/zenzic-action/security/advisories)
+- **GitHub Security Advisories** (preferred): [github.com/PythonWoods-Dev/zenzic-action/security/advisories](https://github.com/PythonWoods-Dev/zenzic-action/security/advisories)
 - **Email**: `dev@pythonwoods.dev` — subject line: `[SECURITY] zenzic-action — <brief description>`
 
 Include a clear description of the vulnerability, steps to reproduce, potential impact,

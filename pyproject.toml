@@ -15,8 +15,8 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://zenzic.dev"
-Repository = "https://github.com/PythonWoods/zenzic-action"
-Tracker = "https://github.com/PythonWoods/zenzic-action/issues"
+Repository = "https://github.com/PythonWoods-Dev/zenzic-action"
+Tracker = "https://github.com/PythonWoods-Dev/zenzic-action/issues"
 
 [tool.setuptools]
 py-modules = []

@@ -7,7 +7,7 @@
   "author": "PythonWoods <dev@pythonwoods.dev>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/PythonWoods/zenzic-action.git"
+    "url": "https://github.com/PythonWoods-Dev/zenzic-action.git"
   },
   "keywords": [
     "github-action",
