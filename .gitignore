@@ -72,4 +72,5 @@ uv.lock
 .github/agents/
 
 # AI Control Plane — never commit to version control
+.claude/
 .gemini/
