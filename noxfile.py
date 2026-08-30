@@ -113,6 +113,7 @@ def check(session: nox.Session) -> None:
 def tests(session: nox.Session) -> None:
     """Run action smoke tests and shell validation."""
     session.run("bash", "-n", "zenzic-action-wrapper.sh", external=True)
+    session.run("bash", "tests/test_config_file_guard.sh", external=True)
     _run_zenzic_check(session)
 
 
