@@ -55,7 +55,7 @@ git rev-parse v2^{} v2.14.0^{}
 # SUCCESS: Both hashes must be identical.
 ```
 
-Distribution target: **GitHub Actions Marketplace** — `uses: PythonWoods/zenzic-action@v2`.
+Distribution target: **GitHub Actions Marketplace** — `uses: PythonWoods-Dev/zenzic-action@v2`.
 
 ## Version Scheme
 

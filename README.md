@@ -4,7 +4,7 @@ SPDX-License-Identifier: Apache-2.0
 -->
 
 <p align="center">
-  <a href="https://github.com/PythonWoods/zenzic-action">
+  <a href="https://github.com/PythonWoods-Dev/zenzic-action">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="./assets/zenzic-wordmark-action-dark.svg">
       <source media="(prefers-color-scheme: light)" srcset="./assets/zenzic-wordmark-action.svg">
@@ -19,12 +19,12 @@ SPDX-License-Identifier: Apache-2.0
 </p>
 
 <p align="center">
-  <a href="https://github.com/PythonWoods/zenzic-action/actions/workflows/self-check.yml"><img alt="ci-status" src="https://img.shields.io/github/actions/workflow/status/PythonWoods/zenzic-action/self-check.yml?branch=main&label=ci&style=flat-square"></a>
+  <a href="https://github.com/PythonWoods-Dev/zenzic-action/actions/workflows/self-check.yml"><img alt="ci-status" src="https://img.shields.io/github/actions/workflow/status/PythonWoods-Dev/zenzic-action/self-check.yml?branch=main&label=ci&style=flat-square"></a>
   <!-- zenzic:audit-badge -->
   <img src="https://img.shields.io/badge/%F0%9F%9B%A1%EF%B8%8F_zenzic--audit-passing-22c55e?style=flat-square" alt="zenzic-audit">
   <!-- zenzic:score-badge -->
   <img src="https://img.shields.io/badge/%F0%9F%9B%A1%EF%B8%8F_zenzic--score-100_%2F_100-4f46e5?style=flat-square" alt="zenzic-score">
-  <a href="https://github.com/PythonWoods/zenzic-action/releases"><img alt="action version" src="https://img.shields.io/github/v/tag/PythonWoods/zenzic-action?sort=semver&label=action&color=4f46e5&style=flat-square"></a>
+  <a href="https://github.com/PythonWoods-Dev/zenzic-action/releases"><img alt="action version" src="https://img.shields.io/github/v/tag/PythonWoods-Dev/zenzic-action?sort=semver&label=action&color=4f46e5&style=flat-square"></a>
   <a href="https://pypi.org/project/zenzic"><img alt="zenzic on PyPI" src="https://img.shields.io/pypi/v/zenzic?label=zenzic&color=0284c7&style=flat-square"></a>
   <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-Apache--2.0-0d9488?style=flat-square"></a>
   <a href="https://reuse.software/"><img alt="REUSE 3.x compliant" src="https://img.shields.io/badge/REUSE-3.x%20compliant-0d9488?style=flat-square"></a>
@@ -69,7 +69,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Zenzic Static Analyzer
-        uses: PythonWoods/zenzic-action@v2
+        uses: PythonWoods-Dev/zenzic-action@v2
         with:
           version: "0.31.0"
           format: "sarif"
@@ -165,7 +165,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Verify Documentation Integrity
-        uses: PythonWoods/zenzic-action@v2
+        uses: PythonWoods-Dev/zenzic-action@v2
         with:
           version: "0.30.0"
           strict: "true"
@@ -192,7 +192,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Run Sovereign Audit
-        uses: PythonWoods/zenzic-action@v2
+        uses: PythonWoods-Dev/zenzic-action@v2
         with:
           version: "0.30.0"
           audit: "true"
@@ -232,7 +232,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Verify Documentation Integrity
-        uses: PythonWoods/zenzic-action@v2
+        uses: PythonWoods-Dev/zenzic-action@v2
         with:
           version: "0.30.0"
           working-directory: ${{ matrix.project.path }}
@@ -244,8 +244,8 @@ jobs:
 
 ## 📦 Unified Ecosystem
 
-- **[Zenzic CLI (Core Engine)](https://github.com/PythonWoods/zenzic)**: Terminal scanner, AST parser, and atomic automated fixer (`zenzic fix`).
-- **[Zenzic VS Code Extension](https://github.com/PythonWoods/zenzic-vscode)**: Real-time editor diagnostics, Quick Fixes, and inline DQS telemetry.
+- **[Zenzic CLI (Core Engine)](https://github.com/PythonWoods-Dev/zenzic)**: Terminal scanner, AST parser, and atomic automated fixer (`zenzic fix`).
+- **[Zenzic VS Code Extension](https://github.com/PythonWoods-Dev/zenzic-vscode)**: Real-time editor diagnostics, Quick Fixes, and inline DQS telemetry.
 - **[Official Documentation](https://zenzic.dev)**: For deep architectural explanations, CI/CD blueprints, and the full finding taxonomy, visit [zenzic.dev](https://zenzic.dev).
 
 ---
