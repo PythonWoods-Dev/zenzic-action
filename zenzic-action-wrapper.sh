@@ -168,6 +168,18 @@ fi
 # so it's always written relative to the workspace root.
 if [ -n "${ZENZIC_SARIF_FILE}" ]; then
   ZENZIC_SARIF_FILE="$(realpath -m -- "${ZENZIC_SARIF_FILE}")"
+  # Create the output directory. The analyzer's stdout is redirected into this
+  # path below, and a redirect does not create intermediate directories — so a
+  # perfectly valid `sarif-file: reports/out.sarif` failed at the shell level
+  # whenever reports/ did not already exist, and surfaced as the SARIF-integrity
+  # warning below ("process was likely aborted ... SIGKILL or runtime crash"),
+  # blaming the analyzer for a missing directory. Safe to create unconditionally:
+  # the sandbox guard above has already rejected absolute paths and `..`
+  # traversal, so this can only ever create a directory inside the workspace.
+  if ! mkdir -p -- "$(dirname -- "${ZENZIC_SARIF_FILE}")"; then
+    echo "::error title=Zenzic — SARIF Path Unwritable::Could not create the directory for sarif-file '${ZENZIC_SARIF_FILE}'." >&2
+    exit 1
+  fi
 fi
 
 # Navigate to the specified working directory
