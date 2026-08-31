@@ -73,4 +73,24 @@ else
   cat "${stderr_log}"
 fi
 
+echo "=== sarif-file: a nested output path is created, not assumed to exist ==="
+# The wrapper redirects analyzer stdout into ${ZENZIC_SARIF_FILE}. A redirect
+# does not create intermediate directories, so `sarif-file: reports/out.sarif`
+# on a workspace with no reports/ directory failed at the shell level -- and the
+# failure surfaced as the SARIF-integrity warning ("process was likely aborted
+# ... SIGKILL or runtime crash"), blaming the analyzer for a missing directory.
+# NOTE: deliberately no HARNESS_PRECREATE_DIR here -- that is the whole point.
+result="$(run_wrapper "ZENZIC_SARIF_FILE=reports/nested/out.sarif")"
+exit_code="$(_field "${result}" 1)"
+stderr_log="$(_field "${result}" 3)"
+workdir="$(_field "${result}" 4)"
+if [ "${exit_code}" -eq 0 ] \
+   && [ -f "${workdir}/reports/nested/out.sarif" ] \
+   && ! grep -q "SARIF truncated" "${stderr_log}"; then
+  pass "nested output directory created; SARIF written, no truncation warning"
+else
+  fail "wrapper must create sarif-file's parent directory (exit=${exit_code})"
+  cat "${stderr_log}"
+fi
+
 report_and_exit
