@@ -54,6 +54,7 @@ uv.lock
 .zenzic_cache/
 # Derived local metadata
 .zenzic-score.json
+.zenzic-history.jsonl
 
 # ────────────────────────────────────────────────────────────────────────────
 # IDEs & Operating System
