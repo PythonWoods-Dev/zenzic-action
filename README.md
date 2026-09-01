@@ -32,11 +32,11 @@ SPDX-License-Identifier: Apache-2.0
 
 ---
 
-## Documentation Graph & SDD Quality Gate
+## Documentation Quality Gate
 
-AI models generate volume; Zenzic verifies truth. In modern Specification-Driven Development (SDD), documentation repositories act as the architectural source of truth for software systems and autonomous agent swarms.
+Validate Markdown documentation, links, policies, and secrets in pull requests — before broken docs or leaked credentials reach `main`.
 
-**`zenzic-action`** integrates the **Documentation Quality Platform (DQP)** into GitHub Actions workflows. It validates Markdown table contracts (`Z521`), allowed cell enums (`Z522`), heading sequence hierarchies (`Z523`), cross-directory traceability (`Z412`), and credential leaks in seconds, blocking defective merges and emitting enriched SARIF v2.1.0 telemetry directly to GitHub Code Scanning.
+**`zenzic-action`** runs the Zenzic Core engine in GitHub Actions. It checks Markdown table contracts (`Z521`), cell enums (`Z522`), heading hierarchy (`Z523`), cross-file references (`Z412`), and credential leaks, then reports results as SARIF for PR review.
 
 > [!NOTE]
 > **Ecosystem Distribution Context**: `zenzic-action` serves as the automated CI-side quality gate for pull request enforcement. For local developer workflows, we recommend pairing this Action with **Track 1 (Pre-commit Hook `zenzic-guard`)** or **Track 2 (Project Dependency `zenzic>=0.31,<0.32`)** to catch defects locally before pushing commits.
@@ -80,6 +80,42 @@ jobs:
 
 ---
 
+## 🖥️ What You Get
+
+Here's a real failing run: `zenzic check all docs` against a small fixture with a leaked credential, a broken link, and an unused asset, captured in CI mode:
+
+```
+✘ SECURITY BREACH DETECTED  [LIKELY PLACEHOLDER]
+  x Finding:    Secret detected (aws-access-key) — rotate immediately.
+  x Location:   docs/deploy.md:4
+  x Credential:  AKIA************MPLE
+  Action: Rotate this credential immediately and purge it from the repository history.
+
+mkdocs - ./docs/ - 4 files (2 pages, 1 config, 1 assets) - 0.0s - 177 files/s
+
+docs/assets/unused.png  !  [Z405]  File not referenced in any documentation page.
+docs/deploy.md:1  !  [Z410]  Document is isolated and unreachable from defined entry points: '/deploy/'
+docs/index.md:3  x  [Z101]  './setup.md' resolves to '/setup/' which is not in the Virtual Site Map
+    3  ❱  See the [setup guide](./setup.md) for details.
+docs/index.md:5  x  [Z104]  './assets/diagram.png' not found in docs
+    5  ❱  ![architecture](./assets/diagram.png)
+       │  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Summary:  x 1 security breach  - 1 file impacted  x 2 errors  ! 5 warnings  i 0 info  - 3 files with findings
+FAILED: Security breaches detected. Exit code 2 is mandatory.
+DQS Final Score: 0/100 (Security Override — 1 non-suppressible finding detected)
+```
+
+The step exits `2` — a credential breach is never suppressible, regardless of `strict` or `fail-on-error`. Every run reports a **DQS (Documentation Quality Score, 0–100)**; a security breach overrides it to `0` outright.
+
+On a clean pass, the same command ends in a single line:
+
+```
+DQS Final Score: 98/100 (Gate Passed)
+```
+
+---
+
 ## 🎯 Immediate Benefits
 
 Integrating Zenzic into your CI/CD workflow delivers immediate security, quality, and authoring guarantees:
@@ -99,8 +135,8 @@ Findings are uploaded directly to **GitHub Code Scanning (SARIF v2.1.0)**. PR re
 - **Accessibility Checks**: Flags generic image alt text (`Z514`), malformed lists (`Z520`), and bare unformatted URLs (`Z515`).
 - **Policy-as-Code Compliance**: Enforces required frontmatter (`Z610`), forbidden terms (`Z617`), and Zero-Trust domain whitelists (`Z614`).
 
-### 4. Deterministic Quality Scoring (DQS)
-Track your documentation health over time with mathematical rigor (0–100 score). Set hard quality gates (`fail_under = 90`) to maintain quality standards automatically.
+### 4. One Score to Track
+Every run reports the DQS. Set `fail_under = 90` in `.zenzic.toml` to gate merges automatically once quality drops below your threshold.
 
 ---
 
@@ -116,7 +152,7 @@ Configure all inputs and outputs for `zenzic-action` within your workflow defini
 | `working-directory` | `.` | Relative path to directory where Zenzic should run (useful for monorepos). |
 | `format` | `sarif` | Output format: `sarif`, `text`, or `json`. |
 | `sarif-file` | `zenzic-results.sarif` | Relative path inside the workspace for SARIF output. |
-| `upload-sarif` | `true` | Upload SARIF results to GitHub Code Scanning (requires `security-events: write`). |
+| `upload-sarif` | `true` | Upload SARIF results to Code Scanning (requires `security-events: write`). |
 | `strict` | `false` | Exit non-zero on warnings as well as errors. |
 | `fail-on-error` | `true` | Fail the workflow step if Zenzic detects quality errors. |
 | `config-file` | `""` | Optional path (relative to the workspace) to a TOML config file, passed as `--config` to zenzic. Falls back to normal `.zenzic.toml`/`pyproject.toml` discovery if omitted. |
