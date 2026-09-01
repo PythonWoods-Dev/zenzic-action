@@ -84,7 +84,7 @@ jobs:
 
 Here's a real failing run: `zenzic check all docs` against a small fixture with a leaked credential, a broken link, and an unused asset, captured in CI mode:
 
-```
+```text
 ✘ SECURITY BREACH DETECTED  [LIKELY PLACEHOLDER]
   x Finding:    Secret detected (aws-access-key) — rotate immediately.
   x Location:   docs/deploy.md:4
@@ -110,7 +110,7 @@ The step exits `2` — a credential breach is never suppressible, regardless of 
 
 On a clean pass, the same command ends in a single line:
 
-```
+```text
 DQS Final Score: 98/100 (Gate Passed)
 ```
 
