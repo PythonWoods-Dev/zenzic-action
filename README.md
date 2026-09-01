@@ -120,6 +120,7 @@ Configure all inputs and outputs for `zenzic-action` within your workflow defini
 | `strict` | `false` | Exit non-zero on warnings as well as errors. |
 | `fail-on-error` | `true` | Fail the workflow step if Zenzic detects quality errors. |
 | `config-file` | `""` | Optional path (relative to the workspace) to a TOML config file, passed as `--config` to zenzic. Falls back to normal `.zenzic.toml`/`pyproject.toml` discovery if omitted. |
+| `diff-base` | `""` | Path to a JSON report file to use as the baseline for `zenzic diff` instead of the saved `.zenzic-score.json` snapshot. Point it at an artifact from the main branch to block PRs that increase technical debt. |
 | `audit` | `false` | Sovereign Audit mode: bypasses all inline suppressions to reveal unfiltered documentation graph state. |
 | `guard-scan` | `false` | Run `zenzic guard scan` pre-check for credentials and forbidden patterns. Failures are fatal. |
 | `check-stamp` | `true` | Verify documentation badge score freshness (`zenzic score --check-stamp`). |
@@ -169,9 +170,12 @@ jobs:
         with:
           version: "0.30.0"
           strict: "true"
-          fail-under: 95
           upload-sarif: "true"
 ```
+
+> **Setting a score gate.** `fail_under` is a Zenzic Core setting, not an action input — declare it
+> in your `.zenzic.toml` (`fail_under = 95`) and the action honours it. Point `config-file` at the
+> file if it is not at the default discovery path.
 
 ### Blueprint 2: Nightly Sovereign Audit & Badge Generation
 
