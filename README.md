@@ -71,7 +71,7 @@ jobs:
       - name: Run Zenzic Static Analyzer
         uses: PythonWoods-Dev/zenzic-action@v2
         with:
-          version: "0.31.0"
+          version: "0.30.0"
           format: "sarif"
           upload-sarif: "true"
 ```
