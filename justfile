@@ -194,6 +194,22 @@ test:
     uvx nox -s tests
 
 # Fast static check pass: run all pre-commit hooks without the full test suite.
+# Deliberately does NOT install Core editable from ../zenzic, unlike the other
+# ecosystem repositories. pyproject.toml pins `zenzic==0.30.0` exactly, because
+# this wrapper must be tested against the released version its users actually
+# resolve from PyPI -- not against whatever unreleased state a sibling checkout
+# happens to hold. An editable sibling here would silently test unreleased Core.
+#
+# The hook install is part of setup rather than a step to remember: this
+# repository was once found with no hooks installed at all, the precondition
+# Rule 31 blocks on. Running setup makes that self-healing.
+#
+# Bootstrap a fresh clone: install dependencies and git hooks.
+setup:
+    uv sync --all-groups
+    uvx pre-commit install -t pre-commit -t pre-push
+    @echo "Setup complete. Run 'just verify' to check everything passes."
+
 lint:
     uvx pre-commit run --all-files
 
