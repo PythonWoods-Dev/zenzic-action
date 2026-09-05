@@ -194,6 +194,22 @@ test:
     uvx nox -s tests
 
 # Fast static check pass: run all pre-commit hooks without the full test suite.
+# Deliberately does NOT install Core editable from ../zenzic, unlike the other
+# ecosystem repositories. pyproject.toml pins `zenzic==0.30.0` exactly, because
+# this wrapper must be tested against the released version its users actually
+# resolve from PyPI -- not against whatever unreleased state a sibling checkout
+# happens to hold. An editable sibling here would silently test unreleased Core.
+#
+# The hook install is part of setup rather than a step to remember: this
+# repository was once found with no hooks installed at all, the precondition
+# Rule 31 blocks on. Running setup makes that self-healing.
+#
+# Bootstrap a fresh clone: install dependencies and git hooks.
+setup:
+    uv sync --all-groups
+    uvx pre-commit install -t pre-commit -t pre-push
+    @echo "Setup complete. Run 'just verify' to check everything passes."
+
 lint:
     uvx pre-commit run --all-files
 
@@ -273,25 +289,53 @@ check-pinning:
     fi
     echo "✓ ADR-089: all pre-commit hooks pinned to immutable commit hashes."
 
+# Blocking gate, not a warning. A pre-commit hook that is merely declared in
+# .pre-commit-config.yaml runs nothing: the hook has to be installed into
+# .git/hooks for the commit-time gate to exist at all. Three of the four
+# ecosystem repositories were found with no hook installed, so every commit
+# in them bypassed markdownlint, REUSE and the formatter silently.
+#
+# A missing pre-commit hook cannot block its own commit -- there is nothing
+# installed to run -- so this check fails `just verify` instead, which is the
+# pre-push path and what CI runs. Exit 1, never a warning: the previous
+# version of this recipe printed the same diagnosis and let the work proceed.
+# Blocking gate, not a warning. A pre-commit hook that is merely declared in
+# .pre-commit-config.yaml runs nothing: the hook has to be installed into
+# .git/hooks for the commit-time gate to exist at all. Three of the four
+# ecosystem repositories were found with no hook installed, so every commit
+# in them bypassed markdownlint, REUSE and the formatter silently.
+#
+# A missing pre-commit hook cannot block its own commit -- there is nothing
+# installed to run -- so this check fails `just verify` instead, which is the
+# pre-push path and what CI runs. Exit 1, never a warning: the previous
+# version of this recipe printed the same diagnosis and let the work proceed.
 _check-hooks:
     #!/usr/bin/env bash
+    set -euo pipefail
+    # CI checks out a bare working tree and never commits from it, so git hooks
+    # are meaningless there -- and requiring them would fail every run for a
+    # condition no CI job can or should fix. The gate exists for the machine
+    # where commits are actually authored.
+    if [ -n "${CI:-}" ]; then
+        echo "CI environment: git-hook check skipped (hooks gate local commits only)"
+        exit 0
+    fi
     _missing=0
-    if [ ! -f .git/hooks/pre-commit ]; then
-        echo -e "\033[33m⚠️  WARNING: pre-commit hook is not installed.\033[0m"
-        echo "Without it, static checks and type-checks will NOT run automatically on git commit."
-        echo "👉 Fix it by running: uvx pre-commit install"
+    for _h in pre-commit pre-push; do
+        if [ ! -f ".git/hooks/${_h}" ] || ! grep -qi "pre-commit" ".git/hooks/${_h}"; then
+            echo -e "\033[31mBLOCKED: the ${_h} hook is not installed (or is not pre-commit's).\033[0m"
+            echo "  Without it the ${_h} gate does not run, and defects reach the remote."
+            echo "  Fix: uvx pre-commit install -t ${_h}"
+            _missing=1
+        fi
+    done
+    if [ "${_missing}" -ne 0 ]; then
         echo ""
-        _missing=1
+        echo "Refusing to continue with an uninstalled git hook. See Rule 31."
+        exit 1
     fi
-    if [ ! -f .git/hooks/pre-push ]; then
-        echo -e "\033[33m⚠️  WARNING: pre-push hook is not installed.\033[0m"
-        echo "Without it, you might accidentally push broken code to GitHub and fail the remote CI."
-        echo "👉 Fix it by running: uvx pre-commit install -t pre-push"
-        echo ""
-        _missing=1
-    fi
+    echo "git hooks installed (pre-commit, pre-push)"
 
-# Enforce release contracts and core-pin anchor integrity.
 _release-contracts:
     #!/usr/bin/env bash
     set -euo pipefail

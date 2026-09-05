@@ -12,9 +12,11 @@
 #      receives findings, even when the build fails with a security incident.
 #   4. Enforce the Zenzic Exit Code Contract with coherent UX:
 #        0  — clean (all checks passed)
-#        1  — documentation findings (broken links, orphan pages, dead refs, etc.)
+#        1  — documentation findings (broken links, orphan pages, dead refs, Z202
+#             ordinary path-boundary traversal — non-suppressible but stays Exit 1 — etc.)
 #        2  — SECURITY: credential detected — credential scanner / Z201 — NEVER suppressed
-#        3  — SECURITY: system path traversal — path traversal guard / Z202-203 — NEVER suppressed
+#        3  — SECURITY: system path traversal targeting an OS system directory — Z203
+#             only — NEVER suppressed. Z202 is deliberately not escalated here (see above).
 #        4  — QUALITY REGRESSION: zenzic diff detected a score drop vs baseline — blocks PR merge
 #
 #      For exit codes 2 and 3: if no findings were parsed from the SARIF file
@@ -33,6 +35,9 @@
 #   ZENZIC_AUDIT         "true" → pass --audit flag (bypasses all suppressions)
 #   ZENZIC_DIFF_BASE     Path to a JSON baseline file for zenzic diff comparison.
 #   ZENZIC_CHECK_STAMP   "true" → run 'zenzic score --check-stamp' after check all.
+#   ZENZIC_CONFIG_FILE   Path to a Zenzic TOML config file, passed as '--config' to every
+#                        zenzic invocation (check all, score, diff, audit). Relative to the
+#                        workspace only — absolute paths and '..' traversal are rejected.
 
 set -euo pipefail
 
@@ -46,6 +51,7 @@ ZENZIC_FAIL_ON_ERROR="${ZENZIC_FAIL_ON_ERROR:-true}"
 ZENZIC_AUDIT="${ZENZIC_AUDIT:-false}"
 ZENZIC_DIFF_BASE="${ZENZIC_DIFF_BASE:-}"
 ZENZIC_CHECK_STAMP="${ZENZIC_CHECK_STAMP:-true}"
+ZENZIC_CONFIG_FILE="${ZENZIC_CONFIG_FILE:-}"
 
 # ── SemVer input validation (Defensive Sandbox) ─────────────────────────────
 if [ "${ZENZIC_VERSION}" != "latest" ] && ! [[ "${ZENZIC_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([a-zA-Z0-9.-]+)?$ ]]; then
@@ -109,6 +115,29 @@ if [ -n "${ZENZIC_DIFF_BASE}" ]; then
   fi
 fi
 
+# ── config-file sandbox guard ──────────────────────────────────────────────────
+# config-file is a path to a TOML file inside the workspace. Reject absolute
+# paths and path traversal sequences to prevent reading files outside the checkout.
+CONFIG_ARGS=()
+if [ -n "${ZENZIC_CONFIG_FILE}" ]; then
+  case "${ZENZIC_CONFIG_FILE}" in
+    /*)
+      echo "::error title=Zenzic — config-file Jailbreak::config-file must be a relative path inside the workspace. Absolute paths are forbidden. Got: '${ZENZIC_CONFIG_FILE}'" >&2
+      exit 1
+      ;;
+    *../*|*/..|..)
+      echo "::error title=Zenzic — config-file Jailbreak::config-file must not contain path traversal sequences ('..').  Got: '${ZENZIC_CONFIG_FILE}'" >&2
+      exit 1
+      ;;
+  esac
+  if [ -f "${ZENZIC_CONFIG_FILE}" ]; then
+    CONFIG_ARGS=(--config "${ZENZIC_CONFIG_FILE}")
+  else
+    echo "::error title=Zenzic — config-file Not Found::config-file '${ZENZIC_CONFIG_FILE}' does not exist." >&2
+    exit 1
+  fi
+fi
+
 
 # ── Extra args passthrough (Sovereign Override) ──────────────────────────────
 # ZENZIC_EXTRA_ARGS is set by the caller's workflow (e.g. --exclude-url …).
@@ -139,6 +168,18 @@ fi
 # so it's always written relative to the workspace root.
 if [ -n "${ZENZIC_SARIF_FILE}" ]; then
   ZENZIC_SARIF_FILE="$(realpath -m -- "${ZENZIC_SARIF_FILE}")"
+  # Create the output directory. The analyzer's stdout is redirected into this
+  # path below, and a redirect does not create intermediate directories — so a
+  # perfectly valid `sarif-file: reports/out.sarif` failed at the shell level
+  # whenever reports/ did not already exist, and surfaced as the SARIF-integrity
+  # warning below ("process was likely aborted ... SIGKILL or runtime crash"),
+  # blaming the analyzer for a missing directory. Safe to create unconditionally:
+  # the sandbox guard above has already rejected absolute paths and `..`
+  # traversal, so this can only ever create a directory inside the workspace.
+  if ! mkdir -p -- "$(dirname -- "${ZENZIC_SARIF_FILE}")"; then
+    echo "::error title=Zenzic — SARIF Path Unwritable::Could not create the directory for sarif-file '${ZENZIC_SARIF_FILE}'." >&2
+    exit 1
+  fi
 fi
 
 # Navigate to the specified working directory
@@ -147,7 +188,7 @@ cd -- "${INPUT_WORKING_DIRECTORY}" || exit 1
 if [ "${ZENZIC_FORMAT}" = "sarif" ]; then
   # SARIF path: capture stdout to file; stderr streams to the step log.
   # `|| EXIT_CODE=$?` captures the exit code without triggering set -e.
-  zenzic check all --format sarif ${STRICT_FLAG} --ci ${AUDIT_FLAG} "${EXTRA_ARGS[@]}" \
+  zenzic check all --format sarif ${STRICT_FLAG} --ci ${AUDIT_FLAG} "${CONFIG_ARGS[@]}" "${EXTRA_ARGS[@]}" \
     > "${ZENZIC_SARIF_FILE}" \
     || EXIT_CODE=$?
 
@@ -201,7 +242,7 @@ PYEOF
 
 else
   # Non-SARIF: stream output directly to the step log; capture exit code.
-  zenzic check all --format "${ZENZIC_FORMAT}" ${STRICT_FLAG} --ci ${AUDIT_FLAG} "${EXTRA_ARGS[@]}" \
+  zenzic check all --format "${ZENZIC_FORMAT}" ${STRICT_FLAG} --ci ${AUDIT_FLAG} "${CONFIG_ARGS[@]}" "${EXTRA_ARGS[@]}" \
     || EXIT_CODE=$?
 
   # CAP detection is SARIF-only; always false for non-SARIF formats.
@@ -221,7 +262,7 @@ DEBT_PTS="0"
 if [ "${ZENZIC_AUDIT}" != "true" ] && { [ "${EXIT_CODE}" -eq 0 ] || [ "${EXIT_CODE}" -eq 1 ]; }; then
   SCORE_EXIT=0
   SCORE_OUTPUT=""
-  SCORE_OUTPUT=$(zenzic score --format json --ci 2>/dev/null) || SCORE_EXIT=$?
+  SCORE_OUTPUT=$(zenzic score --format json --ci "${CONFIG_ARGS[@]}" 2>/dev/null) || SCORE_EXIT=$?
 
   if [ -n "${SCORE_OUTPUT}" ]; then
     SCORE=$(echo "${SCORE_OUTPUT}" | python3 -c "
@@ -253,7 +294,7 @@ fi
 # Skipped in audit mode (badges are not relevant for suppression-bypassed runs).
 if [ "${ZENZIC_CHECK_STAMP}" = "true" ] && [ "${ZENZIC_AUDIT}" != "true" ]; then
   STAMP_EXIT=0
-  zenzic score --check-stamp --ci || STAMP_EXIT=$?
+  zenzic score --check-stamp --ci "${CONFIG_ARGS[@]}" || STAMP_EXIT=$?
   if [ "${STAMP_EXIT}" -ne 0 ]; then
     echo "::error::Badge freshness check failed. Run 'zenzic score --stamp' locally and commit the result."
     EXIT_CODE="${STAMP_EXIT}"
@@ -269,7 +310,7 @@ if [ "${ZENZIC_AUDIT}" != "true" ] && { [ "${EXIT_CODE}" -eq 0 ] || [ "${EXIT_CO
   if [ "${ZENZIC_FORMAT}" = "json" ] || [ -n "${ZENZIC_DIFF_BASE}" ]; then
     DIFF_EXIT=0
     DIFF_OUTPUT=""
-    DIFF_OUTPUT=$(zenzic diff --format json "${DIFF_BASE_ARGS[@]}" 2>/dev/null) || DIFF_EXIT=$?
+    DIFF_OUTPUT=$(zenzic diff --format json "${DIFF_BASE_ARGS[@]}" "${CONFIG_ARGS[@]}" 2>/dev/null) || DIFF_EXIT=$?
 
     if [ -n "${DIFF_OUTPUT}" ]; then
       SCORE=$(echo "${DIFF_OUTPUT}" | python3 -c "
@@ -302,7 +343,7 @@ if [ "${ZENZIC_GENERATE_AUDIT_REPORT}" = "true" ]; then
   if [ "${ZENZIC_STRICT}" = "true" ]; then
     AUDIT_STRICT_ARG="--strict"
   fi
-  zenzic audit --format json ${AUDIT_STRICT_ARG} > zenzic-audit.json 2>/dev/null || true
+  zenzic audit --format json ${AUDIT_STRICT_ARG} "${CONFIG_ARGS[@]}" > zenzic-audit.json 2>/dev/null || true
 fi
 
 # ── Exit Code Contract ────────────────────────────────────────────────────────
@@ -335,7 +376,7 @@ MDEOF
   cat >> "${GITHUB_STEP_SUMMARY}" <<'MDEOF'
 | **Rule** | Z201 — Credential Scanner |
 | **Action** | Remove the secret and rotate it immediately |
-| **Reference** | https://zenzic.dev/docs/reference/finding-codes |
+| **Reference** | https://zenzic.dev/reference/finding-codes/ |
 MDEOF
   exit 2
 fi
@@ -346,7 +387,7 @@ if [ "${EXIT_CODE}" -eq 3 ]; then
   echo "score=${SCORE}" >> "${GITHUB_OUTPUT}"
   echo "suppression-debt-pts=${DEBT_PTS}" >> "${GITHUB_OUTPUT}"
   echo "cap-exceeded=false" >> "${GITHUB_OUTPUT}"
-  echo "::error title=Zenzic Boundary Breach — Z202/Z203 (Exit 3)::Path traversal or filesystem boundary violation detected. findings-count=${FINDINGS}. Exit 3 is non-suppressible per the Zenzic Exit Code Contract." >&2
+  echo "::error title=Zenzic Boundary Breach — Z203 (Exit 3)::Path traversal targeting an OS system directory detected. findings-count=${FINDINGS}. Exit 3 is non-suppressible per the Zenzic Exit Code Contract." >&2
   cat >> "${GITHUB_STEP_SUMMARY}" <<'MDEOF'
 ## ❌ Zenzic — Boundary Breach (Exit 3)
 
@@ -359,9 +400,9 @@ Exit 3 is **non-suppressible** — `fail-on-error: false` has no effect.
 MDEOF
   printf '| **Findings** | %s |\n' "${FINDINGS}" >> "${GITHUB_STEP_SUMMARY}"
   cat >> "${GITHUB_STEP_SUMMARY}" <<'MDEOF'
-| **Rules** | Z202/Z203 — Path Traversal Guard |
+| **Rule** | Z203 — Path Traversal Guard (fatal, targets an OS system directory) |
 | **Action** | Remove the offending path reference |
-| **Reference** | https://zenzic.dev/docs/reference/finding-codes |
+| **Reference** | https://zenzic.dev/reference/finding-codes/ |
 MDEOF
   exit 3
 fi
@@ -402,7 +443,7 @@ MDEOF
     printf '| **Findings** | %s |\n' "${FINDINGS}" >> "${GITHUB_STEP_SUMMARY}"
     printf '| **Score** | %s |\n' "${SCORE:-n/a}" >> "${GITHUB_STEP_SUMMARY}"
     cat >> "${GITHUB_STEP_SUMMARY}" <<'MDEOF'
-| **Reference** | https://zenzic.dev/docs/reference/finding-codes |
+| **Reference** | https://zenzic.dev/reference/finding-codes/ |
 MDEOF
   fi
 fi

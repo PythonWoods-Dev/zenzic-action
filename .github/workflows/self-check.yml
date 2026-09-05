@@ -80,7 +80,7 @@ jobs:
               exit 1
             fi
 
-            if git ls-remote --exit-code --heads https://github.com/PythonWoods/zenzic.git "$ZENZIC_CORE_REF" > /dev/null 2>&1; then
+            if git ls-remote --exit-code --heads https://github.com/PythonWoods-Dev/zenzic.git "$ZENZIC_CORE_REF" > /dev/null 2>&1; then
               echo "Override branch exists in core. Using it."
               {
                 echo "### Governed Core Override"
@@ -93,22 +93,43 @@ jobs:
               echo "core_ref=$ZENZIC_CORE_REF" >> $GITHUB_OUTPUT
               exit 0
             fi
-            echo "::error::ZENZIC_CORE_REF '$ZENZIC_CORE_REF' not found in PythonWoods/zenzic."
+            echo "::error::ZENZIC_CORE_REF '$ZENZIC_CORE_REF' not found in PythonWoods-Dev/zenzic."
             exit 1
           fi
 
-          if git ls-remote --exit-code --heads https://github.com/PythonWoods/zenzic.git "$TARGET_BRANCH" > /dev/null 2>&1; then
-            echo "Branch $TARGET_BRANCH exists in core. Using it."
-            echo "core_ref=$TARGET_BRANCH" >> $GITHUB_OUTPUT
-          else
-            echo "Branch $TARGET_BRANCH not found in core. Falling back to main."
-            echo "core_ref=main" >> $GITHUB_OUTPUT
+          # Priority 2: an explicit, committed declaration that this branch
+          # depends on a specific zenzic core ref. Replaces the old "does a
+          # same-named branch happen to exist in core" heuristic, which
+          # silently fell back to main on ANY name mismatch -- the same risk
+          # already found and fixed in zenzic-vscode's identical pattern
+          # (V031_SOVEREIGN_PARITY_ROBUST_FALLBACK). The governed
+          # ZENZIC_CORE_REF override above stays Priority 1 unchanged.
+          if [[ -f ".zenzic-core-ref" ]]; then
+            DECLARED_REF="$(tr -d '[:space:]' < .zenzic-core-ref)"
+            if [[ -z "$DECLARED_REF" ]]; then
+              echo "::error::.zenzic-core-ref exists but is empty. Put a real zenzic branch/tag name in it, or delete the file to use main."
+              exit 1
+            fi
+            if git ls-remote --exit-code --heads --tags https://github.com/PythonWoods-Dev/zenzic.git "$DECLARED_REF" > /dev/null 2>&1; then
+              echo "Declared core ref (.zenzic-core-ref): $DECLARED_REF -- found in core, using it."
+              echo "core_ref=$DECLARED_REF" >> $GITHUB_OUTPUT
+            else
+              echo "::error::.zenzic-core-ref declares '$DECLARED_REF', but no matching branch or tag exists in PythonWoods-Dev/zenzic. Update .zenzic-core-ref to a real ref, or delete the file to fall back to main. Falling back silently here is exactly the failure mode this file exists to prevent."
+              exit 1
+            fi
+            exit 0
           fi
+
+          # No declaration and no override: this branch has not asked for a
+          # specific core ref, so main is the correct, ordinary default --
+          # not a fallback from a failed match, and nothing to warn about.
+          echo "No .zenzic-core-ref declaration and no ZENZIC_CORE_REF override -- using zenzic's main (no cross-repo core coupling declared for this branch)."
+          echo "core_ref=main" >> $GITHUB_OUTPUT
 
       - name: Checkout local zenzic (unreleased)
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: PythonWoods/zenzic
+          repository: PythonWoods-Dev/zenzic
           ref: ${{ steps.resolve-branch.outputs.core_ref }}
           path: _zenzic_core
           fetch-tags: true

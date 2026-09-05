@@ -113,6 +113,12 @@ def check(session: nox.Session) -> None:
 def tests(session: nox.Session) -> None:
     """Run action smoke tests and shell validation."""
     session.run("bash", "-n", "zenzic-action-wrapper.sh", external=True)
+    # One real-execution test per path sandbox guard in the wrapper. Each runs
+    # the actual script against a fake `zenzic` on PATH; shared rejection
+    # assertions live in tests/lib/guard_harness.sh.
+    session.run("bash", "tests/test_config_file_guard.sh", external=True)
+    session.run("bash", "tests/test_diff_base_guard.sh", external=True)
+    session.run("bash", "tests/test_sarif_file_guard.sh", external=True)
     _run_zenzic_check(session)
 
 

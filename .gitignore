@@ -54,6 +54,7 @@ uv.lock
 .zenzic_cache/
 # Derived local metadata
 .zenzic-score.json
+.zenzic-history.jsonl
 
 # ────────────────────────────────────────────────────────────────────────────
 # IDEs & Operating System
@@ -72,4 +73,5 @@ uv.lock
 .github/agents/
 
 # AI Control Plane — never commit to version control
+.claude/
 .gemini/

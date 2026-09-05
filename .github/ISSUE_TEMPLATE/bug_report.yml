@@ -15,7 +15,7 @@ body:
     id: action_ref
     attributes:
       label: Action ref used
-      description: "The tag or SHA used in `uses: PythonWoods/zenzic-action@<ref>`"
+      description: "The tag or SHA used in `uses: PythonWoods-Dev/zenzic-action@<ref>`"
       placeholder: "v2.14.0"
     validations:
       required: true
@@ -51,7 +51,7 @@ body:
       label: Workflow step (anonymised)
       description: The `uses` step from your workflow. Remove any secrets or private paths.
       placeholder: |
-        - uses: PythonWoods/zenzic-action@v1.1.0
+        - uses: PythonWoods-Dev/zenzic-action@v1.1.0
           with:
             docs-path: ./docs
             strict: true
