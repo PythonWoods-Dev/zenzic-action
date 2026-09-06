@@ -121,9 +121,11 @@ DQS Final Score: 98/100 (Gate Passed)
 Integrating Zenzic into your CI/CD workflow delivers immediate security, quality, and authoring guarantees:
 
 ### 1. Zero-Leak Security Enforcement
+
 Hardcoded API keys, tokens, and credentials (`Z201`) immediately trigger **Exit Code 2**, halting the CI pipeline instantly. Security violations bypass all suppression budgets and cannot be overridden by `--exit-zero`.
 
 ### 2. Rich PR Annotations & Code Scanning
+
 Findings are uploaded directly to **GitHub Code Scanning (SARIF v2.1.0)**. PR reviewers see actionable annotations on the exact line and file with remediation instructions—no digging through raw terminal logs.
 
 <p align="center">
@@ -131,11 +133,13 @@ Findings are uploaded directly to **GitHub Code Scanning (SARIF v2.1.0)**. PR re
 </p>
 
 ### 3. Full Topological & Semantic Validation
+
 - **Broken Cross-References**: Detects dead links, missing image assets, and broken URL anchors across thousands of files in milliseconds.
 - **Accessibility Checks**: Flags generic image alt text (`Z514`), malformed lists (`Z520`), and bare unformatted URLs (`Z515`).
 - **Policy-as-Code Compliance**: Enforces required frontmatter (`Z610`), forbidden terms (`Z617`), and Zero-Trust domain whitelists (`Z614`).
 
 ### 4. One Score to Track
+
 Every run reports the DQS. Set `fail_under = 90` in `.zenzic.toml` to gate merges automatically once quality drops below your threshold.
 
 ---
