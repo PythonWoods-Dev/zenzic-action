@@ -14,18 +14,9 @@
 .zenzic.dev.toml
 
 # ────────────────────────────────────────────────────────────────────────────
-# AI Orchestration & Private Workspace (Zero-Leak Governance)
+# Internal workspace (not published)
 # ────────────────────────────────────────────────────────────────────────────
-# Private Tech Lead workspace
-.architect/
-# Local AI routing rules (Trade Secret)
-.clinerules
-# Cursor AI rules (Trade Secret)
-.cursorrules
-# AI Primers and Memory ledgers
-.github/agents/
-# Legacy draft vaults
-.draft/
+.claude/
 
 # ────────────────────────────────────────────────────────────────────────────
 # Python, Testing & Coverage
@@ -67,11 +58,3 @@ uv.lock
 # ============================================================================
 # End of .gitignore
 # ============================================================================
-
-# AI Agent Private Memory
-.clinerules
-.github/agents/
-
-# AI Control Plane — never commit to version control
-.claude/
-.gemini/
