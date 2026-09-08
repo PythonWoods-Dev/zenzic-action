@@ -15,8 +15,11 @@
 
 # ────────────────────────────────────────────────────────────────────────────
 # Internal workspace (not published)
+# Both trees are listed even though only .claude/ exists here: the
+# protection should not depend on which tree happens to be present.
 # ────────────────────────────────────────────────────────────────────────────
 .claude/
+.human/
 
 # ────────────────────────────────────────────────────────────────────────────
 # Python, Testing & Coverage
