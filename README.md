@@ -240,7 +240,8 @@ jobs:
         with:
           version: "0.30.0"
           audit: "true"
-          format: "markdown"
+          format: "text"
+          check-stamp: "true"
 ```
 
 ### Blueprint 3: Monorepo Documentation Matrix
@@ -283,6 +284,60 @@ jobs:
           upload-sarif: "true"
           sarif-file: "zenzic-${{ matrix.project.name }}.sarif"
 ```
+
+### Blueprint 4: Compliance Report with a Debt Baseline
+
+Exercises the inputs the blueprints above do not: a non-default config location, a
+credential pre-scan, a saved baseline to compare against, a formal report artifact, and a
+non-fatal run that records findings without blocking the merge.
+
+```yaml
+name: Documentation Compliance Report
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  compliance:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      # The baseline this PR is measured against. Produced by a main-branch run
+      # and downloaded here, so `diff-base` has a real file to point at.
+      - name: Fetch the main-branch baseline
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: zenzic-baseline
+          path: baseline
+
+      - name: Audit and report
+        uses: PythonWoods-Dev/zenzic-action@v2
+        with:
+          version: "0.30.0"
+          config-file: "ci/zenzic.ci.toml"
+          guard-scan: "true"
+          diff-base: "baseline/zenzic-report.json"
+          generate_audit_report: "true"
+          check-stamp: "false"
+          fail-on-error: "false"
+
+      - name: Keep the report
+        uses: actions/upload-artifact@v4
+        with:
+          name: zenzic-audit
+          path: zenzic-audit.json
+```
+
+Two of those deserve a word. `fail-on-error: "false"` records findings without failing the
+step — useful while adopting Zenzic on an existing corpus, and the wrong choice for a gate
+that is meant to block. `guard-scan: "true"` is fatal regardless of `fail-on-error`: a
+credential finding is not a quality finding, and the action does not let one setting
+suppress the other.
 
 ---
 
