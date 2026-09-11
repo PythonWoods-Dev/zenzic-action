@@ -34,9 +34,9 @@ SPDX-License-Identifier: Apache-2.0
 
 ## Documentation Quality Gate
 
-Validate Markdown documentation, links, policies, and secrets in pull requests — before broken docs or leaked credentials reach `main`.
+Validate Markdown and MDX documentation, links, policies, and secrets in pull requests — before broken docs or leaked credentials reach `main`.
 
-**`zenzic-action`** runs the Zenzic Core engine in GitHub Actions. It checks Markdown table contracts (`Z521`), cell enums (`Z522`), heading hierarchy (`Z523`), cross-file references (`Z412`), and credential leaks, then reports results as SARIF for PR review.
+**`zenzic-action`** runs the Zenzic Core engine in GitHub Actions. It checks table contracts (`Z521`), cell enums (`Z522`), heading hierarchy (`Z523`), cross-file references (`Z412`), and credential leaks, then reports results as SARIF for PR review. `.md` and `.mdx` are both scanned, in any letter case, with no configuration — including links written as JSX components.
 
 > [!NOTE]
 > **Ecosystem Distribution Context**: `zenzic-action` serves as the automated CI-side quality gate for pull request enforcement. For local developer workflows, we recommend pairing this Action with **Track 1 (Pre-commit Hook `zenzic-guard`)** or **Track 2 (Project Dependency `zenzic>=0.31,<0.32`)** to catch defects locally before pushing commits.
