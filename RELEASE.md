@@ -36,14 +36,14 @@ just release <patch|minor|major> <core-version>
 # 4. Validate release metadata/core-pin parity
 just audit-release
 
-# 5. Open and merge PR into main
+# 5. Open and merge PR into main. SQUASH — see below.
 
 # 6. Switch to main and pull latest
 git checkout main
 git pull origin main
 
 # 7. Create the release tag and push
-git tag -s -m "Release v2.14.0" v2.14.0
+just release-tag            # always -s, and verifies its own output
 git push origin v2.14.0
 
 # 8. Move the floating v2 tag to the new release:
@@ -56,6 +56,21 @@ git rev-parse v2^{} v2.14.0^{}
 ```
 
 Distribution target: **GitHub Actions Marketplace** — `uses: PythonWoods-Dev/zenzic-action@v2`.
+
+## Where the pre-squash commits go
+
+Pull requests are merged with **squash**: it is the only one of GitHub's merge
+methods this repository's rules allow. A merge commit is rejected, and a rebase
+merge is refused with `Base branch requires signed commits. Rebase merges
+cannot be automatically signed by GitHub`.
+
+The individual commits of a pull request remain available afterwards, including
+once its branch has been deleted:
+
+```bash
+git fetch origin refs/pull/96/head:refs/heads/pr-96-history
+git log pr-96-history
+```
 
 ## Version Scheme
 
