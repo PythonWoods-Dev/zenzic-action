@@ -134,7 +134,7 @@ Findings are uploaded directly to **GitHub Code Scanning (SARIF v2.1.0)**. PR re
 
 ### 3. Full Topological & Semantic Validation
 
-- **Broken Cross-References**: Detects dead links, missing image assets, and broken URL anchors across thousands of files in milliseconds.
+- **Broken Cross-References**: Detects dead links, missing image assets, and broken URL anchors across the whole repository in a single pass, without a site build.
 - **Accessibility Checks**: Flags generic image alt text (`Z514`), malformed lists (`Z520`), and bare unformatted URLs (`Z515`).
 - **Policy-as-Code Compliance**: Enforces required frontmatter (`Z610`), forbidden terms (`Z617`), and Zero-Trust domain whitelists (`Z614`).
 
