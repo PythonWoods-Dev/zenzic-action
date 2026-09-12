@@ -53,6 +53,61 @@ versions:
     fi
     echo "✅ Ecosystem alignment verified."
 
+# Create the signed release tag. Run AFTER the bump commit is on `main`, which
+# means after its pull request has merged -- `main` refuses a direct push.
+# Usage: just release-tag [--push]
+release-tag *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    # Separate from `release` for a structural reason, not a stylistic one. `main`
+    # carries a `pull_request` ruleset rule with no bypass actors, so the bump
+    # commit reaches the default branch through a pull request; by the time there
+    # is something to tag, the branch the bump was made on is behind. Tagging
+    # inside `release` would tag the wrong commit.
+    #
+    # The moving major tag (`v2`) is deliberately NOT created here. It is a
+    # force-moved pointer, which is a different operation with a different blast
+    # radius, and RELEASE.md sequences it after the immutable tag is pushed.
+    _push=false
+    for _arg in {{args}}; do [[ "$_arg" == "--push" ]] && _push=true; done
+
+    if [[ -n "$(git status --porcelain)" ]]; then
+        echo "Refusing to tag a dirty tree — commit or stash first." >&2
+        exit 1
+    fi
+    version="$(uvx --from "bump-my-version==1.2.6" bump-my-version show current_version)"
+    tag="v${version}"
+
+    if git rev-parse -q --verify "refs/tags/${tag}" >/dev/null; then
+        echo "Tag ${tag} already exists locally. Delete it first if you mean to recreate it." >&2
+        exit 1
+    fi
+
+    # -s, always. A lightweight `git tag ${tag}` produces an object GitHub reports
+    # as type `commit` with no signature of its own; no repository in this
+    # ecosystem has a ruleset targeting tags, so nothing rejects it, and it still
+    # triggers release.yml. The wrong form must not be reachable from here.
+    git tag -s "${tag}" -m "${tag}"
+
+    if [[ "$(git cat-file -t "${tag}")" != "tag" ]]; then
+        echo "FATAL: ${tag} is not an annotated tag." >&2
+        git tag -d "${tag}" >/dev/null
+        exit 1
+    fi
+    if ! git cat-file tag "${tag}" | grep -qE "BEGIN (SSH|PGP) SIGNATURE"; then
+        echo "FATAL: ${tag} carries no signature. Check user.signingkey and gpg.format." >&2
+        git tag -d "${tag}" >/dev/null
+        exit 1
+    fi
+    echo "${tag}: annotated and signed."
+
+    if $_push; then
+        echo "Pushing ${tag} — this starts the release workflow."
+        git push origin "${tag}"
+    else
+        echo "Not pushed. Review, then: git push origin ${tag}"
+    fi
+
 audit-release:
     #!/usr/bin/env bash
     set -euo pipefail
