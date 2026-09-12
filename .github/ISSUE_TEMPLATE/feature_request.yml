@@ -10,7 +10,7 @@ body:
     attributes:
       value: |
         Before opening a feature request, please check the
-        [open issues](https://github.com/PythonWoods/zenzic-action/issues) to avoid duplicates.
+        [open issues](https://github.com/PythonWoods-Dev/zenzic-action/issues) to avoid duplicates.
 
   - type: dropdown
     id: category

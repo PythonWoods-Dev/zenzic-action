@@ -53,6 +53,59 @@ versions:
     fi
     echo "✅ Ecosystem alignment verified."
 
+# Create the signed release tag. Run AFTER the bump commit is on `main`, which
+# means after its pull request has merged -- `main` refuses a direct push.
+# Usage: just release-tag [--push]
+release-tag *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    # Separate from `release` for a structural reason, not a stylistic one. The
+    # bump commit reaches the default branch through a pull request; by the time
+    # there is something to tag, the branch the bump was made on is behind. Tagging
+    # inside `release` would tag the wrong commit.
+    #
+    # The moving major tag (`v2`) is deliberately NOT created here. It is a
+    # force-moved pointer, which is a different operation with a different blast
+    # radius, and RELEASE.md sequences it after the immutable tag is pushed.
+    _push=false
+    for _arg in {{args}}; do [[ "$_arg" == "--push" ]] && _push=true; done
+
+    if [[ -n "$(git status --porcelain)" ]]; then
+        echo "Refusing to tag a dirty tree — commit or stash first." >&2
+        exit 1
+    fi
+    version="$(uvx --from "bump-my-version==1.2.6" bump-my-version show current_version)"
+    tag="v${version}"
+
+    if git rev-parse -q --verify "refs/tags/${tag}" >/dev/null; then
+        echo "Tag ${tag} already exists locally. Delete it first if you mean to recreate it." >&2
+        exit 1
+    fi
+
+    # -s, always. A lightweight `git tag ${tag}` produces an object GitHub reports
+    # as type `commit` with no signature of its own, and it still triggers
+    # release.yml. The wrong form must not be reachable from here.
+    git tag -s "${tag}" -m "${tag}"
+
+    if [[ "$(git cat-file -t "${tag}")" != "tag" ]]; then
+        echo "FATAL: ${tag} is not an annotated tag." >&2
+        git tag -d "${tag}" >/dev/null
+        exit 1
+    fi
+    if ! git cat-file tag "${tag}" | grep -qE "BEGIN (SSH|PGP) SIGNATURE"; then
+        echo "FATAL: ${tag} carries no signature. Check user.signingkey and gpg.format." >&2
+        git tag -d "${tag}" >/dev/null
+        exit 1
+    fi
+    echo "${tag}: annotated and signed."
+
+    if $_push; then
+        echo "Pushing ${tag} — this starts the release workflow."
+        git push origin "${tag}"
+    else
+        echo "Not pushed. Review, then: git push origin ${tag}"
+    fi
+
 audit-release:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -194,6 +247,22 @@ test:
     uvx nox -s tests
 
 # Fast static check pass: run all pre-commit hooks without the full test suite.
+# Deliberately does NOT install Core editable from ../zenzic, unlike the other
+# ecosystem repositories. pyproject.toml pins `zenzic==0.30.0` exactly, because
+# this wrapper must be tested against the released version its users actually
+# resolve from PyPI -- not against whatever unreleased state a sibling checkout
+# happens to hold. An editable sibling here would silently test unreleased Core.
+#
+# The hook install is part of setup rather than a step to remember: this
+# repository was once found with no hooks installed at all, a precondition
+# this now blocks on. Running setup makes that self-healing.
+#
+# Bootstrap a fresh clone: install dependencies and git hooks.
+setup:
+    uv sync --all-groups
+    uvx pre-commit install -t pre-commit -t pre-push
+    @echo "Setup complete. Run 'just verify' to check everything passes."
+
 lint:
     uvx pre-commit run --all-files
 
@@ -273,25 +342,53 @@ check-pinning:
     fi
     echo "✓ ADR-089: all pre-commit hooks pinned to immutable commit hashes."
 
+# Blocking gate, not a warning. A pre-commit hook that is merely declared in
+# .pre-commit-config.yaml runs nothing: the hook has to be installed into
+# .git/hooks for the commit-time gate to exist at all. Three of the four
+# ecosystem repositories were found with no hook installed, so every commit
+# in them bypassed markdownlint, REUSE and the formatter silently.
+#
+# A missing pre-commit hook cannot block its own commit -- there is nothing
+# installed to run -- so this check fails `just verify` instead, which is the
+# pre-push path and what CI runs. Exit 1, never a warning: the previous
+# version of this recipe printed the same diagnosis and let the work proceed.
+# Blocking gate, not a warning. A pre-commit hook that is merely declared in
+# .pre-commit-config.yaml runs nothing: the hook has to be installed into
+# .git/hooks for the commit-time gate to exist at all. Three of the four
+# ecosystem repositories were found with no hook installed, so every commit
+# in them bypassed markdownlint, REUSE and the formatter silently.
+#
+# A missing pre-commit hook cannot block its own commit -- there is nothing
+# installed to run -- so this check fails `just verify` instead, which is the
+# pre-push path and what CI runs. Exit 1, never a warning: the previous
+# version of this recipe printed the same diagnosis and let the work proceed.
 _check-hooks:
     #!/usr/bin/env bash
+    set -euo pipefail
+    # CI checks out a bare working tree and never commits from it, so git hooks
+    # are meaningless there -- and requiring them would fail every run for a
+    # condition no CI job can or should fix. The gate exists for the machine
+    # where commits are actually authored.
+    if [ -n "${CI:-}" ]; then
+        echo "CI environment: git-hook check skipped (hooks gate local commits only)"
+        exit 0
+    fi
     _missing=0
-    if [ ! -f .git/hooks/pre-commit ]; then
-        echo -e "\033[33m⚠️  WARNING: pre-commit hook is not installed.\033[0m"
-        echo "Without it, static checks and type-checks will NOT run automatically on git commit."
-        echo "👉 Fix it by running: uvx pre-commit install"
+    for _h in pre-commit pre-push; do
+        if [ ! -f ".git/hooks/${_h}" ] || ! grep -qi "pre-commit" ".git/hooks/${_h}"; then
+            echo -e "\033[31mBLOCKED: the ${_h} hook is not installed (or is not pre-commit's).\033[0m"
+            echo "  Without it the ${_h} gate does not run, and defects reach the remote."
+            echo "  Fix: uvx pre-commit install -t ${_h}"
+            _missing=1
+        fi
+    done
+    if [ "${_missing}" -ne 0 ]; then
         echo ""
-        _missing=1
+        echo "Refusing to continue with an uninstalled git hook."
+        exit 1
     fi
-    if [ ! -f .git/hooks/pre-push ]; then
-        echo -e "\033[33m⚠️  WARNING: pre-push hook is not installed.\033[0m"
-        echo "Without it, you might accidentally push broken code to GitHub and fail the remote CI."
-        echo "👉 Fix it by running: uvx pre-commit install -t pre-push"
-        echo ""
-        _missing=1
-    fi
+    echo "git hooks installed (pre-commit, pre-push)"
 
-# Enforce release contracts and core-pin anchor integrity.
 _release-contracts:
     #!/usr/bin/env bash
     set -euo pipefail

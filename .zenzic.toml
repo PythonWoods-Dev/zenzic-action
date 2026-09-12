@@ -15,11 +15,10 @@
 # The relative path to your documentation root.
 #
 # BEHAVIOR:
-#   - If commented out (default), Zenzic uses Auto-Discovery to find your
-#     docs based on the engine (reads docusaurus.config.ts, mkdocs.yml…).
+#   - If commented out (default), Zenzic uses "docs" as the documentation root.
 #   - Set to "." to scan the entire repository (L1 system exclusions apply).
 #
-# DEFAULT: Auto-discovered
+# DEFAULT: "docs"
 #
 docs_dir = "."
 
@@ -58,7 +57,7 @@ placeholder_patterns = []
 
 # --- ENGINE CONTEXT ---
 [build_context]
-engine         = "standalone" # Supported: docusaurus, mkdocs, zensical, standalone
+engine         = "standalone" # Supported: mkdocs, zensical, standalone
 base_url       = "/"
 default_locale = "en"
 
@@ -116,7 +115,6 @@ brand_obsolescence = [
 "README.md" = ["Z101"]
 "assets/**" = ["Z405"]
 "changelogs/**" = ["Z410", "Z411", "Z513"]
-"CHANGELOG.md" = ["Z513"]
 "CODE_OF_CONDUCT.md" = ["Z411", "Z511"]
 
 # Governance Playbook:

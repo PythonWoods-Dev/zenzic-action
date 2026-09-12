@@ -11,42 +11,19 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 *Upcoming changes for the next release.*
 
-## [2.14.0] - 2026-08-18
+### Fixed
 
-Release notes for the `v2.14.0` release of `zenzic-action`.
+- **Stale GitHub Org Slug (`PythonWoods/zenzic-action` → `PythonWoods-Dev/zenzic-action`)**: the org was renamed at some point. `README.md`'s badges (CI-status, version-tag) and cross-repo links, `package.json`, `pyproject.toml`, `RELEASE.md`, `CONTRIBUTING.md`, `SECURITY.md`, the 3 issue templates, and `self-check.yml`'s real checkout/`ls-remote` steps against the `zenzic` Core sibling repo all still referenced the old org. Non-breaking today (GitHub 301-redirects; live-verified via `curl`/`gh api`), but non-canonical. Same defect class already fixed in `zenzic` Core's own files this session.
+- **`config-file` Input Now Actually Works**: `config-file` was fully specified in `action.yml` since it was introduced, including its own path-traversal/absolute-path rejection guarantee. But the wrapper never consumed `ZENZIC_CONFIG_FILE` at all, and Zenzic core had no `--config` flag to receive it. Setting `config-file` in a workflow silently did nothing. Both sides are now real: core gained a `--config PATH` flag (see the `zenzic` core changelog). The wrapper now passes `--config "$ZENZIC_CONFIG_FILE"` to every zenzic invocation (`check all`, `score`, `score --check-stamp`, `diff`, `audit`) when the input is set, guarded by the same absolute-path/`..`-traversal rejection `action.yml` already documented (mirroring the existing `diff-base`/`sarif-file` sandbox guards). It also adds a new check that a nonexistent `config-file` fails the step rather than silently falling back to normal discovery. `action.yml`'s and `README.md`'s descriptions corrected in the same pass: the "falls back to `.github/.zenzic.toml`" claim never matched core's real discovery chain (`.zenzic.toml` → `pyproject.toml [tool.zenzic]` only) — removed. New test coverage: `tests/test_config_file_guard.sh` exercises the guard's accept and reject paths against the real wrapper script (fake `zenzic` binary on `PATH`, no network required).
 
-### Changed
-
-- **Core Baseline Alignment (`v0.30.0`)**: Bumped default pinned Zenzic Core engine to `v0.30.0`, adding CI/CD quality gate enforcement and SARIF code scanning annotations for AST semantic linting (`Z513`–`Z520`), Policy-as-Code rules (`Z617`–`Z619`), and sequential scan performance optimizations.
-- **Single Tool Provisioning (`uv tool install`)**: Replaced ephemeral multi-invocation `uvx` executions with a single, isolated tool installation (`uv tool install --isolated --force "zenzic==${ZENZIC_VERSION}"`), caching the binary across all step executions (`check`, `score`, `diff`, `audit`) and eliminating redundant network downloads.
-
-### Security
-
-- **Shell Injection Defense**: Hardened `zenzic-action-wrapper.sh` by adding strict `--` parameter delimiters to all commands handling user-provided path and version inputs (`cd --`, `realpath -m --`).
-- **SemVer Input Validation**: Added strict SemVer regex validation (`^[0-9]+\.[0-9]+\.[0-9]+([a-zA-Z0-9.-]+)?$`) to reject malformed or potentially malicious version strings before execution.
-- **Resilient SARIF Uploads**: Configured `continue-on-error: true` on SARIF upload steps so pull requests from fork repositories lacking `security-events: write` permissions do not fail the workflow gate.
-
-## [2.13.1] - 2026-08-14
-
-Release notes for the `v2.13.1` release of `zenzic-action`.
-
-### Changed
-
-- **Core Baseline Alignment**: Realigned default pinned Zenzic Core dependency to `v0.29.1`, inheriting core engine fixes for `Z401` (Missing Directory Index) false positives on dynamic directories.
-
-
-## [2.13.0] - 2026-08-13
-
-Release notes for the `v2.13.0` release of `zenzic-action`.
-
-### Added
-
-- **Policy-as-Code Engine Alignment (`v0.29.0`)**: Aligned the GitHub Action with Zenzic Core `v0.29.0`, enabling CI/CD enforcement and automated PR checks for the new Policy-as-Code governance rules (`Z612`–`Z616`).
-
----
+- **Phantom `/docs/`-Prefixed Finding-Codes URL**: `zenzic-action-wrapper.sh`'s Exit 2 and Exit 3 step-summary tables (3 occurrences) linked to `https://zenzic.dev/docs/reference/finding-codes`, which 404s — corrected to `https://zenzic.dev/reference/finding-codes/`. Found via a global phantom-URL sweep across all four ecosystem repos; same defect class as an already-fixed `zenzic` core `README.md` issue.
+- **Z202/Z203 Exit-3 Messaging Conflation**: `zenzic-action-wrapper.sh`'s Exit Code Contract header comment, `::error` annotation, and job-summary table incorrectly attributed the Exit 3 (Boundary Breach) branch to both `Z202` and `Z203`. Only `Z203` (fatal, OS-system-directory traversal) ever triggers Exit 3 — `Z202` (ordinary docs-root-boundary traversal) is deliberately non-escalated and always stays Exit 1, matching Zenzic Core's own contract. No runtime findings were ever mishandled (a `Z202` finding could never reach the Exit 3 branch); this was a misleading-message-only defect that could cause a reader of CI output to misattribute which finding code caused a build failure.
+- **`tests/test_config_file_guard.sh` Was Never Invoked by Any Automated Pipeline**: the real, passing shell test suite for the `config-file` sandbox guard existed since the guard itself shipped. `noxfile.py`'s `tests` session (the only thing `just test`/CI invoke) only ran `bash -n zenzic-action-wrapper.sh` (a syntax-only check) plus the self-dogfooding gate — never this file. A regression in the guard's accept/reject logic would have gone undetected by CI despite a correct test already existing for it. Now wired in as the `tests` session's second step.
 
 ## Historical Releases
 
+- v2.14.x archive: [changelogs/v2.14.x.md](./changelogs/v2.14.x.md)
+- v2.13.x archive: [changelogs/v2.13.x.md](./changelogs/v2.13.x.md)
 - v2.12.x archive: [changelogs/v2.12.x.md](./changelogs/v2.12.x.md)
 - v2.11.x archive: [changelogs/v2.11.x.md](./changelogs/v2.11.x.md)
 - v2.10.x archive: [changelogs/v2.10.x.md](./changelogs/v2.10.x.md)

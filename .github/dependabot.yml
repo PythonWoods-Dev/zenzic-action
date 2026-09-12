@@ -5,7 +5,6 @@ version: 2
 
 updates:
   # GitHub Actions only — this repo has no Python or npm packages to track via Dependabot.
-  # npm-audit.yml handles Node/Docusaurus dependency auditing separately.
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

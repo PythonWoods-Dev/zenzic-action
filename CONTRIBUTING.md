@@ -17,9 +17,9 @@ Zenzic is structured across three independent, dedicated repositories:
 
 | Repository | Purpose | Primary Stack |
 | :--- | :--- | :--- |
-| **[zenzic](https://github.com/PythonWoods/zenzic)** | Python Core analysis engine & CLI (`src/zenzic`) | Python 3.10+, `uv`, `pytest`, `mypy` |
-| **[zenzic-vscode](https://github.com/PythonWoods/zenzic-vscode)** | Official VS Code Extension (LSP Thin Client) | TypeScript, Node.js 24+, VS Code API |
-| **[zenzic-action](https://github.com/PythonWoods/zenzic-action)** (this repo) | Official GitHub Action CI/CD Wrapper | YAML, Bash, SARIF Upload |
+| **[zenzic](https://github.com/PythonWoods-Dev/zenzic)** | Python Core analysis engine & CLI (`src/zenzic`) | Python 3.10+, `uv`, `pytest`, `mypy` |
+| **[zenzic-vscode](https://github.com/PythonWoods-Dev/zenzic-vscode)** | Official VS Code Extension (LSP Thin Client) | TypeScript, Node.js 24+, VS Code API |
+| **[zenzic-action](https://github.com/PythonWoods-Dev/zenzic-action)** (this repo) | Official GitHub Action CI/CD Wrapper | YAML, Bash, SARIF Upload |
 
 ---
 
@@ -51,10 +51,24 @@ If metadata is missing, malformed, expired, or the branch does not exist in core
 To maintain security, architectural integrity, and legal compliance, all contributions must adhere to these guidelines:
 
 1. **Issue-First Policy**: No Pull Request will be reviewed or merged unless it is preceded by an Issue formally discussed and approved by maintainers. Link the approved Issue in your PR description.
-2. **Mandatory Cryptographic Commit Signatures**: Every commit must be cryptographically signed using GPG, SSH, or S/MIME keypairs (appearing as **Verified** on GitHub). Unsigned commits will be rejected by branch rulesets.
-3. **No AI Slop Clause**: We enforce a strict policy against unverified AI-generated code. Contributors must fully understand, explain, and architecturally justify every single line of code proposed in a PR.
-4. **Developer Certificate of Origin (DCO)**: All commits must include a `Signed-off-by:` line (using `git commit -s`) certifying compliance with the DCO.
-5. **Conventional Commits**: Commit messages must strictly follow the Conventional Commits specification (e.g., `feat(action): add SARIF upload retry logic (#89)`).
+2. **Mandatory Cryptographic Commit Signatures**: Every commit must be cryptographically signed using GPG, SSH, or S/MIME keypairs (appearing as **Verified** on GitHub). Unsigned commits will be rejected by branch rulesets. An official tool can remove this property while reporting success — GitHub's own `gh pr update-branch --rebase` re-creates commits server-side and the result verifies as `unsigned`, so re-do such an update locally with signing configured.
+3. **Linear History — No Merge Commits**: the default branch ruleset enforces a linear history, so a merge commit on a branch targeting it is **rejected at push time** with `GH013: ... This branch must not contain merge commits`. Bring a branch up to date with `git rebase origin/main`, never `git merge origin/main`; if you have already made the merge, reset to the commit before it and rebase instead. This is stated here because the rule is enforced by the platform and was, until 2026-09-12, documented nowhere — a contributor met it only by being refused. Every requirement in this list is imposed by this repository's **ruleset**. The older per-branch protection API declares nothing here and is not used anywhere in this ecosystem. To see exactly which rules apply to you, run `gh api repos/PythonWoods-Dev/zenzic-action/rules/branches/main`.
+4. **No AI Slop Clause**: We enforce a strict policy against unverified AI-generated code. Contributors must fully understand, explain, and architecturally justify every single line of code proposed in a PR.
+5. **Developer Certificate of Origin (DCO)**: All commits must include a `Signed-off-by:` line (using `git commit -s`) certifying compliance with the DCO.
+6. **Conventional Commits**: Commit messages must strictly follow the Conventional Commits specification (e.g., `feat(action): add SARIF upload retry logic (#89)`).
+
+---
+
+## Issue Templates
+
+Opening a new issue offers four templates:
+
+| Template | Use for |
+|:---|:---|
+| **Bug Report** | Unexpected behaviour in the action itself — wrong exit codes, malformed or missing SARIF output, an input not respected. |
+| **Feature Request** | Proposing a new input, output, or behaviour change. |
+| **Security Vulnerability** | A public-appropriate security issue (exit code bypass, path traversal, SARIF injection). High-severity issues (arbitrary code execution, secret exposure) go to the private [Security Advisory](https://github.com/PythonWoods-Dev/zenzic-action/security/advisories/new) instead — the template itself explains the split. |
+| **🛡️ Gate Bypass Post-Mortem** | Maintainer-only. Documents a Break-Glass bypass of the `just verify` Final Guard; not a contributor-facing issue type. |
 
 ---
 
