@@ -111,7 +111,10 @@ brand_obsolescence = [
 # IMPACT:   In --audit mode, shown with [POLICY_EXEMPTION] label.
 #
 [governance.directory_policies]
-"**" = ["Z106"]
+# `"**" = ["Z106"]` was removed 2026-09-13. Z106 (CIRCULAR_LINK) became opt-in and
+# defaults to off, so a corpus-wide exemption for it suppressed nothing and Z620
+# reported it as dead configuration. Nothing replaces it: this repository does not
+# opt into cycle detection, so there is no finding to exempt.
 "README.md" = ["Z101"]
 "assets/**" = ["Z405"]
 "changelogs/**" = ["Z410", "Z411", "Z513"]
