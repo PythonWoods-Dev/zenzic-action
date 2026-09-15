@@ -23,7 +23,9 @@
 docs_dir = "."
 
 strict = true
-fail_under = 100
+# fail_under = 100 - suppression_cap, the relation the generated configuration states
+# (fail_under <= 100 - suppression_cap). With the cap declared at 1 this is 99.
+fail_under = 99
 # exit_zero = false
 # respect_vcs_ignore = true
 # validate_same_page_anchors = true
@@ -74,10 +76,15 @@ badge_stamp_files = ["README.md"]
 #
 # BEHAVIOR:
 #   - If total suppressions > cap: CI fails immediately (Exit Code 1).
-#   - Scoring: Every suppression costs 1 DQS point (Flat-Cost Model).
+#   - Scoring: Every suppression in use costs 1 DQS point (Flat-Cost Model).
 #
-
-suppression_cap = 0
+# suppression_cap = 1, PROVISIONAL: the one policy pair in use on 2026-09-15 silences the two
+# README.md links to LICENSE, which resolve on GitHub and are reported by a core defect (the
+# core keeps LICENSE out of its site map while its link rule looks for it there). That
+# defect has its own directive; when it is fixed this pair becomes dead, and the cap and the
+# floor above are to be re-derived from what then survives. The default of 30 is not
+# calibrated for any project: it began as the free allowance of a retired scoring model.
+suppression_cap = 1
 suppression_cap_fail_hard = true
 
 # Terms that should no longer appear in your documentation.
@@ -95,8 +102,8 @@ brand_obsolescence = [
 # ---------------------------------------------------------------------------
 # Silence a rule for specific file globs.
 #
-# BEHAVIOR: ADDITIVE — each entry adds 1 pt of Technical Debt (flat-cost).
-# IMPACT:   Use directory_policies below for zero-debt strategic exemptions.
+# BEHAVIOR: ADDITIVE — each (pattern, code) pair in use adds 1 pt of Technical Debt.
+# IMPACT:   directory_policies below cost the same per pair; use them to declare a tree once.
 #
 # [governance.per_file_ignores]
 # "docs/legacy/**"      = ["Z601"]  # intentional brand refs → -1 pt
@@ -107,7 +114,7 @@ brand_obsolescence = [
 # ---------------------------------------------------------------------------
 # Strategic exemptions for entire directory trees or specific files.
 #
-# BEHAVIOR: Matched findings are silently dropped — ZERO debt added.
+# BEHAVIOR: Matched findings are dropped; each (pattern, code) pair in use adds 1 pt of Technical Debt.
 # IMPACT:   In --audit mode, shown with [POLICY_EXEMPTION] label.
 #
 [governance.directory_policies]
