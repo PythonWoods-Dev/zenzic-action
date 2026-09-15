@@ -115,8 +115,12 @@ brand_obsolescence = [
 # defaults to off, so a corpus-wide exemption for it suppressed nothing and Z620
 # reported it as dead configuration. Nothing replaces it: this repository does not
 # opt into cycle detection, so there is no finding to exempt.
+# README.md: its LICENSE links resolve on GitHub; the core reports them because it excludes
+# LICENSE from the site map while its link rule looks for it there -- a core defect, recorded.
 "README.md" = ["Z101"]
-"assets/**" = ["Z405"]
+# `"assets/**" = ["Z405"]` was removed 2026-09-15: the wordmark is referenced from README.md
+# through <source srcset>, which the unused-asset check now reads, so the entry suppressed
+# nothing and was reported as dead configuration.
 # `"changelogs/**" = ["Z410", "Z411", "Z513"]` and `"CODE_OF_CONDUCT.md" = ["Z411", "Z511"]`
 # were removed 2026-09-15. Z411, Z511 and Z513 became opt-in and default to off, and
 # Z410 never fires on changelogs/, so all five suppressed nothing and were reported as
