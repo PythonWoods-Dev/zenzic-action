@@ -117,8 +117,10 @@ brand_obsolescence = [
 # opt into cycle detection, so there is no finding to exempt.
 "README.md" = ["Z101"]
 "assets/**" = ["Z405"]
-"changelogs/**" = ["Z410", "Z411", "Z513"]
-"CODE_OF_CONDUCT.md" = ["Z411", "Z511"]
+# `"changelogs/**" = ["Z410", "Z411", "Z513"]` and `"CODE_OF_CONDUCT.md" = ["Z411", "Z511"]`
+# were removed 2026-09-15. Z411, Z511 and Z513 became opt-in and default to off, and
+# Z410 never fires on changelogs/, so all five suppressed nothing and were reported as
+# dead configuration.
 
 # Governance Playbook:
 # https://zenzic.dev/developers/how-to/release-governance-protocol
