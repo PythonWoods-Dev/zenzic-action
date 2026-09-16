@@ -35,6 +35,6 @@ SPDX-License-Identifier = "Apache-2.0"
 # ── Extension-less files ──────────────────────────────────────────────────────
 
 [[annotations]]
-path = ["NOTICE", "LICENSE"]
+path = ["NOTICE", "LICENSE", ".zenzic-core-ref"]
 SPDX-FileCopyrightText = "2026 PythonWoods <dev@pythonwoods.dev>"
 SPDX-License-Identifier = "Apache-2.0"
