@@ -11,6 +11,17 @@ All notable changes to zenzic-action are documented in this file. The project ad
 
 *Upcoming changes for the next release.*
 
+### Changed
+
+- **Core v0.31.0 changes what this action reports on an MkDocs project**: pages declared by
+  `exclude_docs` or `draft_docs` are no longer analysed, because they are absent from the site the
+  build produces — so a workflow that passes today may report fewer findings after the core lands.
+  `draft_docs` follows `mkdocs build`, not `mkdocs serve`. A malformed pattern in `not_in_nav`,
+  `exclude_docs` or `draft_docs` is now reported as `Z407` rather than silently ignored, and no
+  longer aborts the run. **If your workflow compares against a committed baseline, regenerate it**:
+  it lists findings the new core does not produce. The credential tier is unchanged — a secret in an
+  unbuilt file still exits `2`.
+
 ### Fixed
 
 - **Stale GitHub Org Slug (`PythonWoods/zenzic-action` → `PythonWoods-Dev/zenzic-action`)**: the org was renamed at some point. `README.md`'s badges (CI-status, version-tag) and cross-repo links, `package.json`, `pyproject.toml`, `RELEASE.md`, `CONTRIBUTING.md`, `SECURITY.md`, the 3 issue templates, and `self-check.yml`'s real checkout/`ls-remote` steps against the `zenzic` Core sibling repo all still referenced the old org. Non-breaking today (GitHub 301-redirects; live-verified via `curl`/`gh api`), but non-canonical. Same defect class already fixed in `zenzic` Core's own files this session.
