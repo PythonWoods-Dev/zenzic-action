@@ -23,7 +23,7 @@ SPDX-License-Identifier: Apache-2.0
   <!-- zenzic:audit-badge -->
   <img src="https://img.shields.io/badge/%F0%9F%9B%A1%EF%B8%8F_zenzic--audit-passing-22c55e?style=flat-square" alt="zenzic-audit">
   <!-- zenzic:score-badge -->
-  <img src="https://img.shields.io/badge/%F0%9F%9B%A1%EF%B8%8F_zenzic--score-100_%2F_100-4f46e5?style=flat-square" alt="zenzic-score">
+  <img src="https://img.shields.io/badge/%F0%9F%9B%A1%EF%B8%8F_zenzic--score-99_%2F_100-f59e0b?style=flat-square" alt="zenzic-score">
   <a href="https://github.com/PythonWoods-Dev/zenzic-action/releases"><img alt="action version" src="https://img.shields.io/github/v/tag/PythonWoods-Dev/zenzic-action?sort=semver&label=action&color=4f46e5&style=flat-square"></a>
   <a href="https://pypi.org/project/zenzic"><img alt="zenzic on PyPI" src="https://img.shields.io/pypi/v/zenzic?label=zenzic&color=0284c7&style=flat-square"></a>
   <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-Apache--2.0-0d9488?style=flat-square"></a>
@@ -39,7 +39,7 @@ Validate Markdown and MDX documentation, links, policies, and secrets in pull re
 **`zenzic-action`** runs the Zenzic Core engine in GitHub Actions. It checks table contracts (`Z521`), cell enums (`Z522`), heading hierarchy (`Z523`), cross-file references (`Z412`), and credential leaks, then reports results as SARIF for PR review. `.md` and `.mdx` are both scanned, in any letter case, with no configuration — including links written as JSX components.
 
 > [!NOTE]
-> **Ecosystem Distribution Context**: `zenzic-action` serves as the automated CI-side quality gate for pull request enforcement. For local developer workflows, we recommend pairing this Action with **Track 1 (Pre-commit Hook `zenzic-guard`)** or **Track 2 (Project Dependency `zenzic>=0.31,<0.32`)** to catch defects locally before pushing commits.
+> **Ecosystem Distribution Context**: `zenzic-action` serves as the automated CI-side quality gate for pull request enforcement. For local developer workflows, we recommend pairing this Action with **Track 1 (Pre-commit Hook `zenzic-guard`)** or **Track 2 (Project Dependency `zenzic~=0.30.0`)** to catch defects locally before pushing commits.
 
 ---
 
@@ -95,7 +95,7 @@ mkdocs - ./docs/ - 4 files (2 pages, 1 config, 1 assets) - 0.0s - 177 files/s
 
 docs/assets/unused.png  !  [Z405]  File not referenced in any documentation page.
 docs/deploy.md:1  !  [Z410]  Document is isolated and unreachable from defined entry points: '/deploy/'
-docs/index.md:3  x  [Z101]  './setup.md' resolves to '/setup/' which is not in the Virtual Site Map
+docs/index.md:3  x  [Z101]  './setup.md' resolves to '/setup/' which is not in the Virtual Site Map - the target file may not exist
     3  ❱  See the [setup guide](./setup.md) for details.
 docs/index.md:5  x  [Z104]  './assets/diagram.png' not found in docs
     5  ❱  ![architecture](./assets/diagram.png)
@@ -108,10 +108,10 @@ DQS Final Score: 0/100 (Security Override — 1 non-suppressible finding detecte
 
 The step exits `2` — a credential breach is never suppressible, regardless of `strict` or `fail-on-error`. Every run reports a **DQS (Documentation Quality Score, 0–100)**; a security breach overrides it to `0` outright.
 
-On a clean pass, the same command ends in a single line:
+On a clean pass — the same fixture with the three defects removed — the score line reads:
 
 ```text
-DQS Final Score: 98/100 (Gate Passed)
+DQS Final Score: 100/100 (Gate Passed)
 ```
 
 ---
@@ -184,7 +184,7 @@ Select the appropriate integration pattern for your repository requirements:
 
 ### Blueprint 1: Strict Pull Request Quality Gate
 
-Blocks PR merges if broken links are introduced or if the Documentation Quality Score drops below 95:
+Blocks PR merges on a broken link, a leaked credential, or — with `strict` — any warning. The score threshold is not set here: it is `fail_under` in the repository's `.zenzic.toml`, which the action honours (see the note after the blueprint).
 
 ```yaml
 name: Documentation PR Gate
@@ -345,6 +345,7 @@ suppress the other.
 
 - **[Zenzic CLI (Core Engine)](https://github.com/PythonWoods-Dev/zenzic)**: Terminal scanner, AST parser, and atomic automated fixer (`zenzic fix`).
 - **[Zenzic VS Code Extension](https://github.com/PythonWoods-Dev/zenzic-vscode)**: Real-time editor diagnostics, Quick Fixes, and inline DQS telemetry.
+- **[Zenzic MCP Server](https://github.com/PythonWoods-Dev/zenzic-mcp)**: The same engine for LLM agents over MCP — pre-release, source only.
 - **[Official Documentation](https://zenzic.dev)**: For deep architectural explanations, CI/CD blueprints, and the full finding taxonomy, visit [zenzic.dev](https://zenzic.dev).
 
 ---
