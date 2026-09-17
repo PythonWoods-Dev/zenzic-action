@@ -168,6 +168,18 @@ jobs:
           check-stamp: "false"
           upload-sarif: "false"
 
+      # The README's score badge is stamped by a script someone runs; nothing
+      # checked it, and it read 100 against a measured 99 on 2026-09-17. This
+      # step runs the action on the repository itself with check-stamp on, so
+      # a badge that no longer matches the score fails the workflow instead of
+      # standing as a claim nobody verifies.
+      - name: Badge freshness on this repository's own README
+        uses: ./
+        with:
+          working-directory: "."
+          check-stamp: "true"
+          upload-sarif: "false"
+
       - name: Test Action Locally with Z001 Config Error Fixture
         id: test-z001
         uses: ./
