@@ -168,17 +168,14 @@ jobs:
           check-stamp: "false"
           upload-sarif: "false"
 
-      # The README's score badge is stamped by a script someone runs; nothing
-      # checked it, and it read 100 against a measured 99 on 2026-09-17. This
-      # step runs the action on the repository itself with check-stamp on, so
-      # a badge that no longer matches the score fails the workflow instead of
-      # standing as a claim nobody verifies.
-      - name: Badge freshness on this repository's own README
-        uses: ./
-        with:
-          working-directory: "."
-          check-stamp: "true"
-          upload-sarif: "false"
+      # No badge-freshness step, and no score badge in the README, until the engine
+      # this action installs (the released zenzic, 0.30.0 here) and the engine that
+      # stamps the badge agree on this repository: on 2026-09-17 the step below
+      # was added with check-stamp: "true" and failed on the first run -- the
+      # release scores this tree 47 where the v0.31 branch scores it 99, so a
+      # badge no CI can verify was removed rather than kept as a claim. Restore
+      # the step (working-directory ".", check-stamp "true") with the badge when
+      # the core pin reaches the release that computed it.
 
       - name: Test Action Locally with Z001 Config Error Fixture
         id: test-z001
