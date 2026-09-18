@@ -24,8 +24,10 @@ docs_dir = "."
 
 strict = true
 # fail_under = 100 - suppression_cap, the relation the generated configuration states
-# (fail_under <= 100 - suppression_cap). With the cap declared at 1 this is 99.
-fail_under = 99
+# (fail_under <= 100 - suppression_cap). Re-derived 2026-09-18: with the cap back to 0 --
+# the one provisional pair was deleted when the core LICENSE defect was fixed -- the
+# relation gives 100, and the repository measures 100 with zero suppressions in use.
+fail_under = 100
 # exit_zero = false
 # respect_vcs_ignore = true
 # validate_same_page_anchors = true
@@ -77,13 +79,13 @@ release_name = "Magnetite"
 #   - If total suppressions > cap: CI fails immediately (Exit Code 1).
 #   - Scoring: Every suppression in use costs 1 DQS point (Flat-Cost Model).
 #
-# suppression_cap = 1, PROVISIONAL: the one policy pair in use on 2026-09-15 silences the two
-# README.md links to LICENSE, which resolve on GitHub and are reported by a core defect (the
-# core keeps LICENSE out of its site map while its link rule looks for it there). That
-# defect has its own directive; when it is fixed this pair becomes dead, and the cap and the
-# floor above are to be re-derived from what then survives. The default of 30 is not
-# calibrated for any project: it began as the free allowance of a retired scoring model.
-suppression_cap = 1
+# suppression_cap = 0, re-derived 2026-09-18 when the core defect was fixed. The cap was
+# PROVISIONAL at 1 for exactly one pair -- the two README.md links to LICENSE, reported
+# because the core kept LICENSE out of its site map while its link rule looked for it
+# there. With that fixed the pair suppressed nothing and was deleted, so this project now
+# has zero suppressions in use and the cap measures that real state. The default of 30 is
+# not calibrated for any project: it began as the free allowance of a retired scoring model.
+suppression_cap = 0
 suppression_cap_fail_hard = true
 
 # Terms that should no longer appear in your documentation.
@@ -121,9 +123,10 @@ brand_obsolescence = [
 # defaults to off, so a corpus-wide exemption for it suppressed nothing and Z620
 # reported it as dead configuration. Nothing replaces it: this repository does not
 # opt into cycle detection, so there is no finding to exempt.
-# README.md: its LICENSE links resolve on GitHub; the core reports them because it excludes
-# LICENSE from the site map while its link rule looks for it there -- a core defect, recorded.
-"README.md" = ["Z101"]
+# `"README.md" = ["Z101"]` was removed 2026-09-18. It silenced the two LICENSE links, which
+# the core reported because it kept LICENSE out of the site map while its link rule looked
+# for it there. That core defect is fixed: legal files are indexed as static assets, so the
+# links resolve and the pair suppressed nothing -- Z620 reported it as dead configuration.
 # `"assets/**" = ["Z405"]` was removed 2026-09-15: the wordmark is referenced from README.md
 # through <source srcset>, which the unused-asset check now reads, so the entry suppressed
 # nothing and was reported as dead configuration.
