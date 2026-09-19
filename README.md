@@ -144,6 +144,26 @@ Every run reports the DQS. Set `fail_under = 90` in `.zenzic.toml` to gate merge
 
 ---
 
+## Does it work with my stack?
+
+Zenzic reads your documentation, never builds it, so what it needs to know is
+how your generator turns a source file into a URL. Four adapters cover that:
+
+| Your generator | What to use | Notes |
+| :--- | :--- | :--- |
+| MkDocs / Material | `mkdocs` | Detected from `mkdocs.yml`; the nav tree and Material's anchor slugification are read directly. |
+| Zensical | `zensical` | Detected from `zensical.toml`. |
+| **Astro / Starlight** | `prebuilt` | `zenzic init` recognises `astro.config.*` and sets `docs_dir` for you. `prebuilt` reads `.zenzic-vsm.json`, a source-path-to-URL map you generate — for Astro, from the source tree, because its routing is positional. |
+| **Docusaurus** | `prebuilt` | `zenzic init` recognises `docusaurus.config.*`. Generate the manifest from `npm run build`: Docusaurus routing is not derivable from filenames. Its `blog/` is a second content tree — add it with `content_roots`. |
+| Anything else | `standalone` | Derives every URL from the path it reads. Works on any directory of Markdown, with no configuration. |
+
+Astro and Docusaurus are named because both were measured against real
+repositories. A generator Zenzic has not been run against is not listed.
+
+[Configure an adapter](https://zenzic.dev/how-to/configure-adapter/)
+
+---
+
 ## 🛠️ Action Configuration Reference
 
 Configure all inputs and outputs for `zenzic-action` within your workflow definition:
