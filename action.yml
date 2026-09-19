@@ -58,6 +58,12 @@ inputs:
       Run 'zenzic score --check-stamp' after the main audit.
       Fails the build if any badge_stamp_files contain a stale score.
       Set to 'false' to opt out.
+      The score behind this check is computed with '--no-external' when the
+      installed Zenzic supports it (0.31.0 and later), so a third-party host
+      that does not answer cannot move the number or fail the step. Stamp with
+      'zenzic score --stamp --no-external' locally so both sides agree. On an
+      older pinned version the flag does not exist, the check still runs, and
+      the step says so.
     required: false
     default: "true"
   generate_audit_report:

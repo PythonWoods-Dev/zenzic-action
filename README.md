@@ -183,7 +183,7 @@ Configure all inputs and outputs for `zenzic-action` within your workflow defini
 | `diff-base` | `""` | Path to a JSON report file to use as the baseline for `zenzic diff` instead of the saved `.zenzic-score.json` snapshot. Point it at an artifact from the main branch to block PRs that increase technical debt. |
 | `audit` | `false` | Unsuppressed Audit mode: bypasses all inline suppressions to reveal unfiltered documentation graph state. |
 | `guard-scan` | `false` | Run `zenzic guard scan` pre-check for credentials and forbidden patterns. Failures are fatal. |
-| `check-stamp` | `true` | Verify documentation badge score freshness (`zenzic score --check-stamp`). |
+| `check-stamp` | `true` | Verify documentation badge score freshness (`zenzic score --check-stamp`). The score behind it is computed with `--no-external` on Zenzic 0.31.0 and later, so the check does not depend on third-party uptime — stamp locally with `zenzic score --stamp --no-external` so both sides agree. On an older pinned version the flag does not exist, the check still runs, and the step prints a notice saying so. |
 | `generate_audit_report` | `false` | Generate formal compliance report (`zenzic-audit.json`) and upload as workflow artifact. |
 
 ### Outputs

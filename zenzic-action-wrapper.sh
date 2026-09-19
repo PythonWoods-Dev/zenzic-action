@@ -292,9 +292,33 @@ fi
 # ── Badge Freshness Gate: zenzic score --check-stamp ─────────────────────────
 # Verify that badge_stamp_files contain the current score URL.
 # Skipped in audit mode (badges are not relevant for suppression-bypassed runs).
+#
+# --no-external, when the installed zenzic supports it. A badge is a statement
+# about this repository, and until v0.31.0 this gate could not make it one:
+# `zenzic score` validated external URLs with no way to turn that off, so a
+# third-party host that did not answer changed the number and failed the step on
+# a tree nobody had touched. Measured in the core repository on CI run
+# 35455833729: the same commit scored 89/100 on one runner and 97 on two others,
+# a gap of exactly one Z104 (penalty 8.0), and a re-run with no change produced
+# 97 everywhere. Nothing is lost by dropping it here -- `check all` ran above and
+# reports a genuinely broken external link itself, with the file and the line.
+#
+# Asked of the binary rather than derived from ZENZIC_VERSION, because `version`
+# can pin any release and a semver comparison would be a second place to keep the
+# answer. COLUMNS is pinned too: the help is rendered to the terminal width, and
+# at a narrow one the option name wraps and the probe would quietly answer "not
+# supported" -- restoring the defect in silence, which is the failure this whole
+# change is about.
 if [ "${ZENZIC_CHECK_STAMP}" = "true" ] && [ "${ZENZIC_AUDIT}" != "true" ]; then
+  STAMP_EXTERNAL_ARGS=()
+  if COLUMNS=200 zenzic score --help 2>/dev/null | grep -q -- "--no-external"; then
+    STAMP_EXTERNAL_ARGS=(--no-external)
+  else
+    echo "::notice title=Zenzic — Badge check reaches the network::The installed Zenzic (${ZENZIC_VERSION}) has no 'score --no-external', so this badge check validates external URLs and a third-party outage can fail it. Pin 0.31.0 or later to decouple it."
+  fi
+
   STAMP_EXIT=0
-  zenzic score --check-stamp --ci "${CONFIG_ARGS[@]}" || STAMP_EXIT=$?
+  zenzic score --check-stamp --ci "${STAMP_EXTERNAL_ARGS[@]}" "${CONFIG_ARGS[@]}" || STAMP_EXIT=$?
   if [ "${STAMP_EXIT}" -ne 0 ]; then
     echo "::error::Badge freshness check failed. Run 'zenzic score --stamp' locally and commit the result."
     EXIT_CODE="${STAMP_EXIT}"
