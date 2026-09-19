@@ -25,6 +25,17 @@ repos:
     hooks:
       - id: reuse
 
+  # This repo had neither the config nor the gate -- markdownlint enforced
+  # nowhere at all, unlike zenzic core and zenzic-vscode. Pin matches core's
+  # exact rev for one canonical markdownlint-cli version across the
+  # ecosystem. The self-check.yml Windows slot's existing `lint: false` +
+  # its "Node hook (markdownlint) freezes the Windows runner" comment
+  # already anticipated this hook before it existed; it is accurate now.
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: f295829140d25717bc79368d3f966fc1f67a824f  # v0.41.0
+    hooks:
+      - id: markdownlint
+
   - repo: local
     hooks:
       - id: zenzic-check

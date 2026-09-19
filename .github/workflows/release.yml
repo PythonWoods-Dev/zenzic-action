@@ -21,6 +21,39 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Nothing else rejects an unsigned tag: no repository in this ecosystem has a
+      # ruleset targeting `refs/tags/*`, so a lightweight `git tag v1.2.3` carries
+      # no signature, is accepted by the platform, and still triggers this
+      # workflow. This is the only place the tag's form can be enforced, and it
+      # runs before the release is generated so a bad tag publishes nothing.
+      #
+      # A shallow checkout does carry the annotated tag object and its signature --
+      # verified against a real `--depth 1` clone of v0.30.0 rather than assumed,
+      # which is why no `fetch-depth: 0` is needed here.
+      - name: Verify the release tag is annotated and signed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME}"
+          kind="$(git cat-file -t "refs/tags/${tag}")"
+          if [ "${kind}" != "tag" ]; then
+            echo "::error::${tag} is a lightweight tag (object type '${kind}'), not an annotated signed tag. Recreate it with 'just release-tag'."
+            exit 1
+          fi
+          if ! git cat-file tag "refs/tags/${tag}" | grep -qE 'BEGIN (SSH|PGP) SIGNATURE'; then
+            echo "::error::${tag} carries no signature. Recreate it with 'just release-tag'."
+            exit 1
+          fi
+          sha="$(git rev-parse "refs/tags/${tag}")"
+          verified="$(gh api "repos/${GITHUB_REPOSITORY}/git/tags/${sha}" --jq '.verification.verified')"
+          reason="$(gh api "repos/${GITHUB_REPOSITORY}/git/tags/${sha}" --jq '.verification.reason')"
+          if [ "${verified}" != "true" ]; then
+            echo "::error::${tag}'s signature is not verified by GitHub (reason: ${reason})."
+            exit 1
+          fi
+          echo "${tag}: annotated, signed, verified (${reason})."
+
       - name: Generate GitHub Release
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
         with:

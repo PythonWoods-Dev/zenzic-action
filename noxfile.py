@@ -113,6 +113,16 @@ def check(session: nox.Session) -> None:
 def tests(session: nox.Session) -> None:
     """Run action smoke tests and shell validation."""
     session.run("bash", "-n", "zenzic-action-wrapper.sh", external=True)
+    # Every real-execution test in tests/, discovered rather than listed. Each
+    # runs the actual wrapper against a fake `zenzic` on PATH; shared rejection
+    # assertions live in tests/lib/guard_harness.sh. Discovered because a
+    # hand-written list is a second place to remember: a test file added and not
+    # registered here does not run, and reads exactly like one that passes.
+    scripts = sorted(Path("tests").glob("test_*.sh"))
+    if not scripts:
+        session.error("no tests/test_*.sh found -- the discovery glob found nothing")
+    for script in scripts:
+        session.run("bash", str(script), external=True)
     _run_zenzic_check(session)
 
 

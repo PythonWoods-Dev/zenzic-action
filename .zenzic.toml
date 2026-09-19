@@ -15,15 +15,18 @@
 # The relative path to your documentation root.
 #
 # BEHAVIOR:
-#   - If commented out (default), Zenzic uses Auto-Discovery to find your
-#     docs based on the engine (reads docusaurus.config.ts, mkdocs.yml…).
+#   - If commented out (default), Zenzic uses "docs" as the documentation root.
 #   - Set to "." to scan the entire repository (L1 system exclusions apply).
 #
-# DEFAULT: Auto-discovered
+# DEFAULT: "docs"
 #
 docs_dir = "."
 
 strict = true
+# fail_under = 100 - suppression_cap, the relation the generated configuration states
+# (fail_under <= 100 - suppression_cap). Re-derived 2026-09-18: with the cap back to 0 --
+# the one provisional pair was deleted when the core LICENSE defect was fixed -- the
+# relation gives 100, and the repository measures 100 with zero suppressions in use.
 fail_under = 100
 # exit_zero = false
 # respect_vcs_ignore = true
@@ -58,14 +61,13 @@ placeholder_patterns = []
 
 # --- ENGINE CONTEXT ---
 [build_context]
-engine         = "standalone" # Supported: docusaurus, mkdocs, zensical, standalone
+engine         = "standalone" # Supported: mkdocs, zensical, standalone
 base_url       = "/"
 default_locale = "en"
 
 # --- BRAND INTEGRITY ---
 [project_metadata]
 release_name = "Magnetite"
-badge_stamp_files = ["README.md"]
 
 [governance]
 # ---------------------------------------------------------------------------
@@ -75,9 +77,14 @@ badge_stamp_files = ["README.md"]
 #
 # BEHAVIOR:
 #   - If total suppressions > cap: CI fails immediately (Exit Code 1).
-#   - Scoring: Every suppression costs 1 DQS point (Flat-Cost Model).
+#   - Scoring: Every suppression in use costs 1 DQS point (Flat-Cost Model).
 #
-
+# suppression_cap = 0, re-derived 2026-09-18 when the core defect was fixed. The cap was
+# PROVISIONAL at 1 for exactly one pair -- the two README.md links to LICENSE, reported
+# because the core kept LICENSE out of its site map while its link rule looked for it
+# there. With that fixed the pair suppressed nothing and was deleted, so this project now
+# has zero suppressions in use and the cap measures that real state. The default of 30 is
+# not calibrated for any project: it began as the free allowance of a retired scoring model.
 suppression_cap = 0
 suppression_cap_fail_hard = true
 
@@ -96,8 +103,8 @@ brand_obsolescence = [
 # ---------------------------------------------------------------------------
 # Silence a rule for specific file globs.
 #
-# BEHAVIOR: ADDITIVE — each entry adds 1 pt of Technical Debt (flat-cost).
-# IMPACT:   Use directory_policies below for zero-debt strategic exemptions.
+# BEHAVIOR: ADDITIVE — each (pattern, code) pair in use adds 1 pt of Technical Debt.
+# IMPACT:   directory_policies below cost the same per pair; use them to declare a tree once.
 #
 # [governance.per_file_ignores]
 # "docs/legacy/**"      = ["Z601"]  # intentional brand refs → -1 pt
@@ -108,16 +115,25 @@ brand_obsolescence = [
 # ---------------------------------------------------------------------------
 # Strategic exemptions for entire directory trees or specific files.
 #
-# BEHAVIOR: Matched findings are silently dropped — ZERO debt added.
+# BEHAVIOR: Matched findings are dropped; each (pattern, code) pair in use adds 1 pt of Technical Debt.
 # IMPACT:   In --audit mode, shown with [POLICY_EXEMPTION] label.
 #
 [governance.directory_policies]
-"**" = ["Z106"]
-"README.md" = ["Z101"]
-"assets/**" = ["Z405"]
-"changelogs/**" = ["Z410", "Z411", "Z513"]
-"CHANGELOG.md" = ["Z513"]
-"CODE_OF_CONDUCT.md" = ["Z411", "Z511"]
+# `"**" = ["Z106"]` was removed 2026-09-13. Z106 (CIRCULAR_LINK) became opt-in and
+# defaults to off, so a corpus-wide exemption for it suppressed nothing and Z620
+# reported it as dead configuration. Nothing replaces it: this repository does not
+# opt into cycle detection, so there is no finding to exempt.
+# `"README.md" = ["Z101"]` was removed 2026-09-18. It silenced the two LICENSE links, which
+# the core reported because it kept LICENSE out of the site map while its link rule looked
+# for it there. That core defect is fixed: legal files are indexed as static assets, so the
+# links resolve and the pair suppressed nothing -- Z620 reported it as dead configuration.
+# `"assets/**" = ["Z405"]` was removed 2026-09-15: the wordmark is referenced from README.md
+# through <source srcset>, which the unused-asset check now reads, so the entry suppressed
+# nothing and was reported as dead configuration.
+# `"changelogs/**" = ["Z410", "Z411", "Z513"]` and `"CODE_OF_CONDUCT.md" = ["Z411", "Z511"]`
+# were removed 2026-09-15. Z411, Z511 and Z513 became opt-in and default to off, and
+# Z410 never fires on changelogs/, so all five suppressed nothing and were reported as
+# dead configuration.
 
 # Governance Playbook:
 # https://zenzic.dev/developers/how-to/release-governance-protocol

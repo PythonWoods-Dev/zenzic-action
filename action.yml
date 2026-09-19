@@ -38,7 +38,7 @@ inputs:
     required: false
     default: "true"
   config-file:
-    description: "Optional path to a Zenzic configuration file inside the workspace. If not provided, the action automatically searches for '.zenzic.toml' in the repository root, then '.github/.zenzic.toml' (root-first auto-discovery). Absolute paths and path traversal sequences ('..') are rejected."
+    description: "Optional path (relative to the workspace) to a Zenzic TOML config file, passed as '--config' to every zenzic invocation. If not provided, zenzic falls back to its normal discovery: '.zenzic.toml' at the repository root, then '[tool.zenzic]' in pyproject.toml. Absolute paths and path traversal sequences ('..') are rejected; a path that does not exist fails the step rather than silently falling back to discovery."
     required: false
     default: ""
   audit:
@@ -58,6 +58,12 @@ inputs:
       Run 'zenzic score --check-stamp' after the main audit.
       Fails the build if any badge_stamp_files contain a stale score.
       Set to 'false' to opt out.
+      The score behind this check is computed with '--no-external' when the
+      installed Zenzic supports it (0.31.0 and later), so a third-party host
+      that does not answer cannot move the number or fail the step. Stamp with
+      'zenzic score --stamp --no-external' locally so both sides agree. On an
+      older pinned version the flag does not exist, the check still runs, and
+      the step says so.
     required: false
     default: "true"
   generate_audit_report:
